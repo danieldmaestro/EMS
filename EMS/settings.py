@@ -41,8 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'organization',
-    'staff',
     'rest_framework',
+    'accounts',
+    'django_bootstrap5',
     # 'phonenumber_field'
 ]
 
@@ -127,6 +128,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 
 MEDIA_URL = 'media/'
 
@@ -137,4 +140,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "staff.Staff"
+AUTH_USER_MODEL = "accounts.User"
+
+LOGIN_REDIRECT_URL = '/'
+
