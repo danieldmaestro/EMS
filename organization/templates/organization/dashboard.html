@@ -19,20 +19,9 @@
     <div class="row">
 
       <div class="col-md-6 grid-margin stretch-card">
-        <div class="card tale-bg">
-          <div class="card-people mt-auto">
-            {% comment %} <img src="{% static 'images/dashboard/people.svg' %}" alt="people"> {% endcomment %}
-            <div class="weather-info">
-              <div class="d-flex">
-                <div>
-                  {% comment %} <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2> {% endcomment %}
-                </div>
-                <div class="ml-2">
-                  <h4 class="location font-weight-normal"></h4>
-                  <h6 class="font-weight-normal"></h6>
-                </div>
-              </div>
-            </div>
+        <div class="card card-tale">
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <h1 class=" mb-2 display1"> <a style="color: inherit;" href="{{ user.organization.get_absolute_url }}">{{ user.organization.name }}</a></h1>
           </div>
         </div>
       </div>
@@ -43,9 +32,9 @@
 
           <div class="col-md-6 mb-4 stretch-card transparent">
             <div class="card card-tale">
-              <div class="card-body">
-                <p class="mb-4">Staff Count({{staff_list.count}})</p>
-                <p class="fs-30 mb-2">Create Staff</p>
+              <div class="card-body d-flex justify-content-center align-items-center">
+                <p class="mb-4"></p>
+                <p class="fs-30 mb-2"><a style="color: inherit;" href="{% url 'organization:staff_create' %}">Create Staff</a></p>
                 <p></p>
               </div>
             </div>
@@ -53,9 +42,9 @@
 
           <div class="col-md-6 mb-4 stretch-card transparent">
             <div class="card card-dark-blue">
-              <div class="card-body">
+              <div class="card-body d-flex justify-content-center align-items-center">
                 <p class="mb-4"></p>
-                <p class="fs-30 mb-2">Departments</p>
+                <p class="fs-30 mb-2"><a style="color: inherit;" href="{% url "organization:department_list" %}">Departments</a></p>
                 <p></p>
               </div>
             </div>
@@ -66,9 +55,9 @@
 
           <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
             <div class="card card-light-blue">
-              <div class="card-body">
+              <div class="card-body d-flex justify-content-center align-items-center">
                 <p class="mb-4"></p>
-                <p class="fs-30 mb-2">Job Titles</p>
+                <p class="fs-30 mb-2"><a style="color: inherit;" href="{% url 'organization:job_title_list' %}">Job Titles</a></p>
                 <p></p>
               </div>
             </div>
@@ -76,7 +65,7 @@
 
           <div class="col-md-6 stretch-card transparent">
             <div class="card card-light-danger">
-              <div class="card-body">
+              <div class="card-body d-flex justify-content-center align-items-center">
                 <p class="mb-4"></p>
                 <p class="fs-30 mb-2">Queries</p>
                 <p></p>
@@ -115,8 +104,8 @@
                       <td> {{ staff.last_name }} </td>
                       <td> {{ staff.work_email }} </td>
                       <td> {{ staff.phone_number }} </td>
-                      <td> {{ staff.job_title }} </td>
-                      <td> {{ staff.dept }} </td>
+                      <td> {{ staff.job_title.role }} </td>
+                      <td> {{ staff.dept.name }} </td>
                       <td class="font-weight-medium"><div class="badge badge-success">{{ staff.staff_status }}</div></td>
                       <td><a href="{{ staff.get_absolute_url }}">View</a></td>
 

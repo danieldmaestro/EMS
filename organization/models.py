@@ -51,7 +51,7 @@ class Department(models.Model):
     name = models.CharField(max_length=40)
     description = models.TextField(max_length=255)
     slug = models.SlugField(blank=True, null=True)
-    organisation = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="departments", blank=True, null=True)
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="departments", blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("organization:dept_detail", kwargs={"pk": self.pk})
@@ -63,10 +63,12 @@ class Department(models.Model):
 class JobTitle(models.Model):
     role = models.CharField(max_length=25)
     description = models.TextField(max_length=255, null=True, blank=True)
-    department = models.ForeignKey('Department', on_delete=models.CASCADE, related_name="jobtitles", blank=True, null=True)
+    department = models.ForeignKey('Department', on_delete=models.CASCADE, related_name="job_titles", blank=True, null=True)
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="job_titles", blank=True, null=True)
+
 
     def get_absolute_url(self):
-        return reverse("organization:jobtitle_detail", kwargs={"pk": self.pk})
+        return reverse("organization:job_title_detail", kwargs={"pk": self.pk})
 
     def __str__(self) -> str:
         return self.role

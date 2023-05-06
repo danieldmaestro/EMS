@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Job Titles</h1>
+
+<ul>
+    {% for job_title in job_title_list %}
+
+    <li>
+        <h2>{{ job_title.role }}</h2>
+        <p>{{ job_title.description }}</p>
+        <p><a href="{% url 'organization:job_title_update' pk=job_title.pk %}">Update</a></p>    
+    </li>
+    {% endfor %}
+
+</ul>
+
+<a href="{% url 'organization:job_title_create' %}"> Create New Job Title </a>
+{% endblock%}

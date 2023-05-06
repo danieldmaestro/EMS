@@ -29,26 +29,39 @@ class DepartmentCreateForm(forms.ModelForm):
     """Form to create Department"""
     class Meta:
         model = Department
-        fields = ('name', 'description', 'organisation',)
+        fields = ('name', 'description', 'organization',)
 
 
 class JobTitleCreateForm(forms.ModelForm):
     """Form to Create Job Title"""
+    role = forms.CharField(
+        max_length=40,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Role'}),
+    )
+    department=forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    description = forms.CharField(
+        max_length=255,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Job Description'}),
+    )
+
     class Meta:
         model = JobTitle
-        fields = ["role", "department"]
+        fields = ("role", "department", 'description', "organization")
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
-        self.fields['department'].queryset = user.departments.all()
+        self.fields['department'].queryset = user.organization.departments.all()
 
 
 class QueryCreateForm(forms.ModelForm):
     """Form to create query"""
     class Meta:
         model = Query
-        fields = ['employee', 'query_requester', 'reason']
+        fields = ('employee', 'query_requester', 'reason')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
@@ -157,7 +170,7 @@ class StaffCreateForm(forms.ModelForm):
         kwargs.pop("instance")
         super().__init__(*args, **kwargs)
         self.fields['dept'].queryset = user.organization.departments.all()
-        self.fields['job_title'].queryset = user.organization.departments.get().jobtitles.all()
+        self.fields['job_title'].queryset = user.organization.job_titles.all()
 
 
 

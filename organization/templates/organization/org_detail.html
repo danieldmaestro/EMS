@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>
+    {{ org.name }}
+</h1>
+
+<h2>Address: <small class="text-muted">{{ org.address }} </small></h2>
+
+<p> Admin First Name: {{ org.admin_fname }}</p>
+<p> Admin Last Name: {{ org.admin_lname }}</p>
+<p> Admin Email: {{ org.admin_email }}</p>
+<p> Admin Username: {{ org.admin_username }}</p>
+<p> Admin Phone number: {{ org.admin_phone_number }}</p>
+<p> Company Email Domain: {{ org.company_email_domain }}</p>
+
+<a href="{% url 'organization:org_update' pk=org.pk %}">Update Organization Details</a>
+
+{% endblock %}

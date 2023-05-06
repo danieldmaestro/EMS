@@ -1,7 +1,7 @@
 import random
 import string
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from django.db import models
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
@@ -14,7 +14,7 @@ from .models import Organization, Department, JobTitle
 from staff.models import Staff, Query
 from accounts.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
-from .forms import StaffCreateForm, QueryResponseForm, DepartmentCreateForm, JobTitleCreateForm
+from .forms import StaffCreateForm, QueryResponseForm, DepartmentCreateForm, JobTitleCreateForm, OrganizationSignUpForm
 
 
 class AdminDashboardView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -31,6 +31,33 @@ def generate_password(n=8):
     password = ''.join(random.choice(alphabet) for _ in range(n))
     return password
 
+class OrgDetailView(DetailView,LoginRequiredMixin,PermissionRequiredMixin):
+    model = Organization
+    template_name = "organization/org_detail.html"
+    context_object_name = "org"
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+        return queryset.filter(admin=user)
+    
+    def get_object(self, queryset=None):
+        return super().get_object(queryset)
+
+
+class OrgUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    model = Organization
+    success_url = reverse_lazy("organization:admin_dashboard")
+    template_name = "organization/org_form.html"
+    fields = ("name", "address", "admin_fname", "company_email_domain",
+                  "admin_lname", "admin_email", "admin_username", "admin_phone_number")
+
+    def form_valid(self, form):
+        organization = form.save(commit=False)
+        organization.save()
+        return super().form_valid(form)
+
+
 
 class StaffCreateView(CreateView, LoginRequiredMixin,PermissionRequiredMixin):
     form_class = StaffCreateForm
@@ -45,7 +72,7 @@ class StaffCreateView(CreateView, LoginRequiredMixin,PermissionRequiredMixin):
     def form_valid(self, form):
         current_user = self.request.user
         staff = form.save(commit=False)
-        staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name}@{current_user.organization.company_email_domain}"
+        staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name.lower()}@{current_user.organization.company_email_domain}"
         staff.organization = current_user.organization
         password = generate_password()
         # create a new user and assign it to the admin field
@@ -97,15 +124,13 @@ class DepartmentListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
 class DepartmentCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     form_class = DepartmentCreateForm
-    success_url = reverse_lazy("organization:admin_dashboard")
+    success_url = reverse_lazy("organization:department_list")
     template_name = "organization/department_form.html"
 
     
     def form_valid(self, form):
-        current_org = self.request.user.organization
-        print(current_org)
         dept = form.save(commit=False)
-        dept.organisation = self.request.user.organization
+        dept.organization = self.request.user.organization
         dept.save()
         return super().form_valid(form)
     
@@ -118,10 +143,49 @@ class DepartmentUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMix
 
     
     def form_valid(self, form):
-        staff = form.save(commit=False)
-        staff.save()
+        dept = form.save(commit=False)
+        dept.save()
         return super().form_valid(form)
+    
+class JobTitleListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    model = JobTitle
+    template_name = 'organization/job_title_list.html'
+    context_object_name = 'job_title_list'
 
+    def get_queryset(self):
+        oraganization = self.request.user.organization
+        return oraganization.job_titles.all()
+    
+
+class JobTitleCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    form_class = JobTitleCreateForm
+    success_url = reverse_lazy("organization:job_title_list")
+    template_name = "organization/job_title_form.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+    
+    def form_valid(self, form):
+        job_title = form.save(commit=False)
+        job_title.organization = self.request.user.organization
+        job_title.save()
+        return super().form_valid(form)
+    
+
+class JobtTitleUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    model = JobTitle
+    template_name = "organization/job_title_form.html"
+    success_url = reverse_lazy("organization:job_title_list")
+    fields = ('role', 'description', )
+
+    
+    def form_valid(self, form):
+        job_title = form.save(commit=False)
+        job_title.save()
+        return super().form_valid(form)
+    
     
     
 
