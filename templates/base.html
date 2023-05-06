@@ -103,10 +103,12 @@
                   <i class="ti-settings text-primary"></i>
                   Settings
                 </a>
-                <a class="dropdown-item">
+                {% if user.is_authenticated %}
+                <a class="dropdown-item" href="{% url 'accounts:logout' %}">
                   <i class="ti-power-off text-primary"></i>
                   Logout
                 </a>
+                {% endif %}
               </div>
             </li>
             <li class="nav-item nav-settings d-none d-lg-flex">
@@ -125,7 +127,7 @@
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
               <li class="nav-item">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="{% url 'organization:admin_dashboard' %}">
                   <i class="icon-grid menu-icon"></i>
                   <span class="menu-title">Dashboard</span>
                 </a>

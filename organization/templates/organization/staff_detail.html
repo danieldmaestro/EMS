@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>
+    {{ staff.first_name }} {{ staff.last_name }}
+</h1>
+<h2>
+    <small class="text-muted">
+        {{ staff.dept.name }} : {{ staff.job_title.role }}
+  </small>
+</h2>
+
+<p> Gender: {{ staff.gender }}</p>
+<p> Personal Email: {{ staff.personal_email }}</p>
+<p> Work Email: {{ staff.work_email }}</p>
+<p> Username: {{ staff.username }}</p>
+<p> Phone number: {{ staff.phone_number }}</p>
+<p> Date of Birth: {{ staff.date_of_birth }}</p>
+<p> SOO: {{ staff.state_of_origin }}</p>
+<p> Staff Status: {{ staff.staff_status }}</p>
+<p> Next of Kin Name: {{ staff.next_of_kin_name }}</p>
+<p> Next of Kin Email: {{ staff.next_of_kin_email }}</p>
+<p> Next of Kin Phone Number: {{ staff.next_of_kin_phone_number }}</p>
+<p> Date employed: {{ staff.date_employed }}</p>
+
+<a href="{% url 'organization:staff_update' pk=staff.pk %}">Update Staff Details</a>
+
+{% endblock %}

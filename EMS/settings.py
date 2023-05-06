@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'organization',
+    'staff',
     'rest_framework',
     'accounts',
     'django_bootstrap5',
@@ -142,5 +143,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.User"
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'organization:admin_dashboard'
+LOGOUT_REDIRECT_URL = 'home'
 

@@ -1,5 +1,3 @@
-import random
-import string
 
 from django import forms
 from django.utils.text import slugify
@@ -13,21 +11,25 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
-from .models import CsvFile, Department, JobTitle, Organization, Query, Staff
+from .models import CsvFile, Department, JobTitle, Organization
+from staff.models import Query, Staff
 
 
 
 class DepartmentCreateForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=40,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Department Name'}),
+    )
+    description = forms.CharField(
+        max_length=255,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Department Description'}),
+    )
+
     """Form to create Department"""
     class Meta:
         model = Department
-        fields = ['name', 'description']
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
-        super().__init__(*args, **kwargs)
-        self.fields['organization'].initial = user.organization
-        self.fields['slug'].initial = slugify(self.cleaned_data['name'])
+        fields = ('name', 'description', 'organisation',)
 
 
 class JobTitleCreateForm(forms.ModelForm):
@@ -67,41 +69,96 @@ class QueryResponseForm(forms.ModelForm):
         fields = ['response']
 
 
-def generate_password(n=8):
-    """Generate a random password of length n"""
-    alphabet = string.ascii_letters + string.digits
-    password = ''.join(random.choice(alphabet) for _ in range(n))
-    return password
-
-class StaffCreateForm(forms.Form):
+class StaffCreateForm(forms.ModelForm):
+    first_name = forms.CharField(
+        label='First Name',
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+    )
+    last_name = forms.CharField(
+        label='Last Name',
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+    )
+    gender = forms.ChoiceField(
+        label='Gender',
+        choices=Staff.GENDER,
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gender'}),
+    )
+    personal_email = forms.EmailField(
+        label='Personal Email',
+        max_length=254,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Personal Email'}),
+    )
+    username = forms.CharField(
+        label='Username',
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+    )
+    phone_number = forms.CharField(
+        label='Phone Number',
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+    )
+    date_of_birth = forms.DateField(
+        label='Date of Birth',
+        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'YYYY-MM-DD'}),
+    )
+    state_of_origin = forms.ChoiceField(
+        label='State of Origin',
+        choices=Staff.STATE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'State of Origin'}),
+    )
+    next_of_kin_name = forms.CharField(
+        label='Next of Kin Fullname',
+        max_length=60,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Fullname'}),
+    )
+    next_of_kin_email = forms.EmailField(
+        label='Next of Kin Email',
+        max_length=60,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Email'}),
+    )
+    next_of_kin_phone_number = forms.CharField(
+        label='Next of Kin Phone Number',
+        max_length=15,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Phone Number'}),
+    )
+    staff_status = forms.ChoiceField(
+        label='Staff Status',
+        choices=Staff.STAFF_STATUS,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    dept = forms.ModelChoiceField(
+        label='Department',
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    job_title = forms.ModelChoiceField(
+        label='Job Title',
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    # organization = forms.ModelChoiceField(
+    #     label='Organization',
+    #     queryset=None,
+    #     widget=forms.Select(attrs={'class': 'form-control'}),
+    # )
     class Meta:
         model = Staff
         fields = (
-            'first_name', 'last_name', 'profile_picture', 'personal_email', 'username',
-            'phone_number', 'date_of_birth', 'state_of_origin', 'next_of_kin', 'staff_status', 
-            'salary', 'dept', 'job_title', 'organization',
+            'first_name', 'last_name', 'gender', 'personal_email', 'username',
+            'phone_number', 'date_of_birth', 'state_of_origin', 'next_of_kin_name', 'next_of_kin_email',
+            'next_of_kin_phone_number', 'staff_status', 'dept', 'job_title', 'organization',
         )
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user")
+        kwargs.pop("instance")
         super().__init__(*args, **kwargs)
         self.fields['dept'].queryset = user.organization.departments.all()
-        self.fields['job_title'].queryset = user.organization.jobtitles.all()
-    
-    def save(self, commit=True, *args, **kwargs):
-        current_user = kwargs.pop("user", None)
-        password = generate_password()
-        staff = super().save(commit=False)
-        if commit:
-            staff.save()
-        if not staff.user_id:
-            user = User.objects.create_user(username=self.cleaned_data["username"],
-                                            email=self.cleaned_data["work_email"],
-                                            password=password)
-            staff.user = user
-            staff.work_email = f"{staff.first_name[0]}{staff.last_name}@{current_user.organization.company_email_domain}"
-            staff.save()
-        return staff
+        self.fields['job_title'].queryset = user.organization.departments.get().jobtitles.all()
+
 
 
 class OrganizationSignUpForm(forms.ModelForm):
