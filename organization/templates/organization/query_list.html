@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>All Queries</h1>
+
+<ul>
+    {% for query in query_list %}
+
+    <li>
+        <p><strong>Query Reason:</strong> {{ query.reason }}</p>
+        <p><strong>Query Recipient:</strong> {{ query.staff.full_name }}</p>
+        <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
+        <p><a href="{% url 'organization:query_response' pk=query.pk %}">View Response</a></p>    
+    </li>
+    {% endfor %}
+
+</ul>
+
+<a href="{% url 'organization:query_create' %}"> Create New Query </a>
+{% endblock%}

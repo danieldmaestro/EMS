@@ -15,8 +15,9 @@ from .models import CsvFile, Department, JobTitle, Organization
 from staff.models import Query, Staff
 
 
-
 class DepartmentCreateForm(forms.ModelForm):
+    """Form to create Department"""
+    
     name = forms.CharField(
         max_length=40,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Department Name'}),
@@ -26,7 +27,6 @@ class DepartmentCreateForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Department Description'}),
     )
 
-    """Form to create Department"""
     class Meta:
         model = Department
         fields = ('name', 'description', 'organization',)
@@ -59,20 +59,41 @@ class JobTitleCreateForm(forms.ModelForm):
 
 class QueryCreateForm(forms.ModelForm):
     """Form to create query"""
+    staff = forms.ModelChoiceField(
+        label='Query Recipient',
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    query_requester = forms.ModelChoiceField(
+        label='Query Requester',
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    reason = forms.CharField(
+        label='Reason for Query',
+        max_length=60,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Fullname'}),
+    )
     class Meta:
         model = Query
-        fields = ('employee', 'query_requester', 'reason')
+        fields = ('staff', 'query_requester', 'reason')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         # Filter staff queryset based on user's organization
         if user is not None:
-            organization = user.organization
-            self.fields['employee'].queryset = Staff.objects.filter(
-                organization=organization)
-            self.fields['query_requester'].queryset = Staff.objects.filter(
-                organization=organization)
+            queryset =  user.organization.staffs.all()
+            self.fields['staff'].queryset = queryset
+            self.fields['query_requester'].queryset = queryset
+
+    def clean(self):
+        cleaned_data = super().clean()
+        staff = cleaned_data.get('staff')
+        query_requester = cleaned_data.get('query_requester')
+        if staff == query_requester:
+            raise forms.ValidationError("Staff and Query Requester cannot be the same.")
+        return cleaned_data
 
 
 class QueryResponseForm(forms.ModelForm):

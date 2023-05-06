@@ -14,7 +14,7 @@ from .models import Organization, Department, JobTitle
 from staff.models import Staff, Query
 from accounts.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
-from .forms import StaffCreateForm, QueryResponseForm, DepartmentCreateForm, JobTitleCreateForm, OrganizationSignUpForm
+from .forms import StaffCreateForm, QueryResponseForm, DepartmentCreateForm, JobTitleCreateForm, QueryCreateForm
 
 
 class AdminDashboardView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -186,8 +186,41 @@ class JobtTitleUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         job_title.save()
         return super().form_valid(form)
     
+class QueryCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    form_class = QueryCreateForm
+    success_url = reverse_lazy("organization:query_list")
+    template_name = "organization/query_form.html"
     
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
     
+    def form_valid(self, form):
+        query = form.save(commit=False)
+        query.organization = self.request.user.organization
+        query.save()
+        return super().form_valid(form)
+
+class QueryListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    model = Query
+    template_name = 'organization/query_list.html'
+    context_object_name = 'query_list'
+
+    def get_queryset(self):
+        return self.request.user.organization.queries.all()
+    
+class QueryResponseView(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
+    model = Query
+    template_name = "organization/query_response.html"
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+        return queryset.filter(organization=user.organization)
+    
+    def get_object(self, queryset=None):
+        return super().get_object(queryset)
 
 
 

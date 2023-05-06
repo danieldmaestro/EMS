@@ -6,13 +6,16 @@ from organization.models import Department, JobTitle, Organization, NigerianPhon
 
 # Create your models here.
 class Query(models.Model):
-    employee = models.ForeignKey('Staff', on_delete=models.CASCADE, related_name="queries")
+    staff = models.ForeignKey('Staff', on_delete=models.CASCADE, related_name="queries")
     query_requester = models.ForeignKey('Staff', on_delete=models.CASCADE)
     reason = models.TextField()
     response = models.TextField(blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="queries", blank=True)
+    is_responded = models.BooleanField(default=False)
+    
 
     def __str__(self):
-        return f'{self.employee} - {self.reason}'
+        return f'{self.staff} - {self.reason}'
     
 
 class Staff(models.Model):
@@ -51,13 +54,16 @@ class Staff(models.Model):
     next_of_kin_name = models.CharField(max_length=50)
     next_of_kin_email = models.EmailField()
     next_of_kin_phone_number = NigerianPhoneNumberField()
-    dept = models.ForeignKey(Department, on_delete=models.CASCADE,  blank=True)
-    job_title = models.ForeignKey(JobTitle, on_delete=models.CASCADE, blank=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, blank=True)
+    dept = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="staffs",  blank=True)
+    job_title = models.ForeignKey(JobTitle, on_delete=models.CASCADE, related_name="staffs", blank=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="staffs", blank=True)
     date_employed = models.DateField(auto_now_add=True)
 
     def get_absolute_url(self):
         return reverse("organization:staff_detail", kwargs={"pk": self.pk})
+    
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
     
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
