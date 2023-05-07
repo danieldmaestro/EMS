@@ -10,7 +10,7 @@ class Query(models.Model):
     query_requester = models.ForeignKey('Staff', on_delete=models.CASCADE)
     reason = models.TextField()
     response = models.TextField(blank=True, null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="queries", blank=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="queries", blank=True, null=True)
     is_responded = models.BooleanField(default=False)
     
 

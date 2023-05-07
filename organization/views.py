@@ -17,7 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixi
 from .forms import StaffCreateForm, QueryResponseForm, DepartmentCreateForm, JobTitleCreateForm, QueryCreateForm
 
 
-class AdminDashboardView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+class AdminDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Staff
     template_name = 'organization/dashboard.html'
     context_object_name = 'staff_list'
@@ -31,7 +31,7 @@ def generate_password(n=8):
     password = ''.join(random.choice(alphabet) for _ in range(n))
     return password
 
-class OrgDetailView(DetailView,LoginRequiredMixin,PermissionRequiredMixin):
+class OrgDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Organization
     template_name = "organization/org_detail.html"
     context_object_name = "org"
@@ -45,7 +45,7 @@ class OrgDetailView(DetailView,LoginRequiredMixin,PermissionRequiredMixin):
         return super().get_object(queryset)
 
 
-class OrgUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Organization
     success_url = reverse_lazy("organization:admin_dashboard")
     template_name = "organization/org_form.html"
@@ -59,7 +59,7 @@ class OrgUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
 
 
 
-class StaffCreateView(CreateView, LoginRequiredMixin,PermissionRequiredMixin):
+class StaffCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     form_class = StaffCreateForm
     success_url = reverse_lazy("organization:admin_dashboard")
     template_name = "organization/staff_create_form.html"
@@ -84,7 +84,7 @@ class StaffCreateView(CreateView, LoginRequiredMixin,PermissionRequiredMixin):
         staff.save()
         return super().form_valid(form)
     
-class StaffDetailView(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
+class StaffDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Staff
     template_name = "organization/staff_detail.html"
 
@@ -96,7 +96,7 @@ class StaffDetailView(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_object(self, queryset=None):
         return super().get_object(queryset)
 
-class StaffUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+class StaffUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Staff
     template_name = "organization/staff_update_form.html"
     fields = (
@@ -112,7 +112,7 @@ class StaffUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
         return super().form_valid(form)
     
 
-class DepartmentListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+class DepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Staff
     template_name = 'organization/department_list.html'
     context_object_name = 'dept_list'
@@ -122,7 +122,7 @@ class DepartmentListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         return oraganization.departments.all()
     
 
-class DepartmentCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = DepartmentCreateForm
     success_url = reverse_lazy("organization:department_list")
     template_name = "organization/department_form.html"
@@ -135,7 +135,7 @@ class DepartmentCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMix
         return super().form_valid(form)
     
 
-class DepartmentUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Department
     template_name = "organization/department_form.html"
     success_url = reverse_lazy("organization:department_list")
@@ -147,7 +147,7 @@ class DepartmentUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMix
         dept.save()
         return super().form_valid(form)
     
-class JobTitleListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+class JobTitleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = JobTitle
     template_name = 'organization/job_title_list.html'
     context_object_name = 'job_title_list'
@@ -157,7 +157,7 @@ class JobTitleListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         return oraganization.job_titles.all()
     
 
-class JobTitleCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+class JobTitleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = JobTitleCreateForm
     success_url = reverse_lazy("organization:job_title_list")
     template_name = "organization/job_title_form.html"
@@ -174,7 +174,7 @@ class JobTitleCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin
         return super().form_valid(form)
     
 
-class JobtTitleUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+class JobtTitleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = JobTitle
     template_name = "organization/job_title_form.html"
     success_url = reverse_lazy("organization:job_title_list")
@@ -186,7 +186,7 @@ class JobtTitleUpdateView(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         job_title.save()
         return super().form_valid(form)
     
-class QueryCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = QueryCreateForm
     success_url = reverse_lazy("organization:query_list")
     template_name = "organization/query_form.html"
@@ -202,7 +202,7 @@ class QueryCreateView(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         query.save()
         return super().form_valid(form)
 
-class QueryListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Query
     template_name = 'organization/query_list.html'
     context_object_name = 'query_list'
@@ -210,7 +210,7 @@ class QueryListView(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_queryset(self):
         return self.request.user.organization.queries.all()
     
-class QueryResponseView(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
+class QueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Query
     template_name = "organization/query_response.html"
 

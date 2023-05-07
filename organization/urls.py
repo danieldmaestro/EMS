@@ -16,4 +16,7 @@ urlpatterns = [
     path('dashboard/admin/jobtitles/', views.JobTitleListView.as_view(), name="job_title_list"),
     path('dashboard/admin/jobtitles/create', views.JobTitleCreateView.as_view(), name="job_title_create"),
     path('dashboard/admin/jobtitles/<int:pk>/update', views.JobtTitleUpdateView.as_view(), name="job_title_update"),
+    path('dashboard/admin/queries', views.QueryListView.as_view(), name="query_list"),
+    path('dashboard/admin/queries/create', views.QueryCreateView.as_view(), name="query_create"),
+    path('dashboard/admin/queries/<int:pk>/response', views.QueryResponseView.as_view(), name="query_response"),
 ]

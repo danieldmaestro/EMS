@@ -29,6 +29,7 @@
           <a class="navbar-brand brand-logo mr-5" href="index.html"><img src="images/logo.svg" class="mr-2" alt="logo"/></a>
           <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
         </div>
+
         <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
             <span class="icon-menu"></span>
@@ -45,7 +46,15 @@
               </div>
             </li>
           </ul>
+
           <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item">
+              {% if user.is_authenticated %}
+                <p class="mb-0 font-weight-normal float-left"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout<a></p>
+              {% else %}
+                <p><a class="nav-link" href="{% url 'accounts:login' %}">Login<a></p>  
+              {% endif %}
+            </li>
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
                 <i class="icon-bell mx-0"></i>
@@ -94,6 +103,7 @@
                 </a>
               </div>
             </li>
+
             <li class="nav-item nav-profile dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
                 <img src="images/faces/face28.jpg" alt="profile"/>
@@ -135,10 +145,15 @@
             </ul>
           </nav>
         <div class="main-panel">
+      {% if user.is_authenticated %}
 
             {% block content %}
 
             {% endblock %}
+
+      {% else%}
+          <h1>Access Denied.</h1>
+      {% endif %}
 
             <footer class="footer">
                 <div class="d-sm-flex justify-content-center justify-content-sm-between">

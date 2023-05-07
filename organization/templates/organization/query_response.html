@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1> Query Page</h1>
+<p><strong>Query requester:</strong> {{ query.query_requester.full_name}} </p>
+<p><strong>Query Reason:</strong> {{ query.reason }} </p>
+
+{% if query.response %}
+<p><strong>Query Response</strong> {{ query.response }} </p>
+{% else %}
+<p><strong>Sorry. This query has not been responded to yet. Check back later.</strong></p>
+{% endif %}
+
+
+<a href="{% url 'organization:query_list' %}">Back</a>
+
+{% endblock %}
