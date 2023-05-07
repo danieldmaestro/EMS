@@ -4,6 +4,8 @@ import string
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -51,7 +53,6 @@ class OrgDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
 class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Organization
-    success_url = reverse_lazy("organization:admin_dashboard")
     template_name = "organization/org_form.html"
     fields = ("name", "address", "admin_fname", "company_email_domain",
                   "admin_lname", "admin_email", "admin_username", "admin_phone_number")
@@ -64,6 +65,12 @@ class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:admin_dashboard",
+            kwargs={"org_slug": self.object.slug}
+        )
 
 
 def generate_password(n=8):
@@ -84,7 +91,6 @@ class StaffCreateChoiceView(LoginRequiredMixin,PermissionRequiredMixin,TemplateV
 
 class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     form_class = StaffCreateForm
-    success_url = reverse_lazy("organization:admin_dashboard")
     template_name = "organization/staff_create_form.html"
 
     def get_form_kwargs(self):
@@ -93,11 +99,12 @@ class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView
         return kwargs
 
     def form_valid(self, form):
-        current_user = self.request.user
+        current_org = self.request.user.organization
         staff = form.save(commit=False)
-        staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name.lower()}@{current_user.organization.company_email_domain}"
-        staff.organization = current_user.organization
+        staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name.lower()}@{current_org.company_email_domain}"
+        staff.organization = current_org
         password = generate_password()
+        print(f"Staff Password: {password}")
         # create a new user and assign it to the admin field
         user = User.objects.create_user(username=staff.username,
                                         email=staff.work_email,
@@ -105,11 +112,21 @@ class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView
         )
         staff.user = user
         staff.save()
+        subject = f"{current_org.name}: LOGIN CREDENTIALS"
+        message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
+        recipient_list = [staff.personal_email,]
+        # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         return super().form_valid(form)
     
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:admin_dashboard",
+            kwargs={"org_slug": self.request.user.organization.slug }
+        )
     
 class StaffDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Staff
@@ -178,11 +195,16 @@ class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
     
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:department_list",
+            kwargs={"org_slug": self.request.user.organization.slug}
+        )
+    
 
 class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Department
     template_name = "organization/department_form.html"
-    success_url = reverse_lazy("organization:department_list")
     fields = ('name', 'description', )
 
     
@@ -194,6 +216,12 @@ class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:department_list",
+            kwargs={"org_slug": self.object.organization.slug}
+        )
     
 class JobTitleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = JobTitle
@@ -229,11 +257,16 @@ class JobTitleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
     
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:job_title_list",
+            kwargs={"org_slug": self.request.user.organization.slug}
+        )
+    
 
 class JobtTitleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = JobTitle
     template_name = "organization/job_title_form.html"
-    success_url = reverse_lazy("organization:job_title_list")
     fields = ('role', 'description', )
 
     
@@ -245,6 +278,12 @@ class JobtTitleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:job_title_list",
+            kwargs={"org_slug": self.object.organization.slug}
+        )
     
     
 class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -266,6 +305,12 @@ class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:query_list",
+            kwargs={"org_slug": self.request.user.organization.slug}
+        )
 
 class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Query
@@ -359,6 +404,10 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
             
 
         messages.success(request, 'Staff successfully created.')
+        subject = f"{current_org.name}: LOGIN CREDENTIALS"
+        message = f"Dear {staff.fullname()},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
+        recipient_list = [staff.personal_email,]
+        # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         return HttpResponseRedirect(reverse("organization:admin_dashboard",  kwargs={'org_slug': slug }))
 
     def has_permission(self):
