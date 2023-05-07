@@ -13,6 +13,6 @@
 {% endif %}
 
 
-<a href="{% url 'organization:query_list' %}">Back</a>
+<a href="{% url 'organization:query_list' org_slug=user.organization.slug %}">Back</a>
 
 {% endblock %}

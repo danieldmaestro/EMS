@@ -137,7 +137,7 @@
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'organization:admin_dashboard' %}">
+                <a class="nav-link" href="{% url 'organization:admin_dashboard' org_slug=user.organization.slug %}">
                   <i class="icon-grid menu-icon"></i>
                   <span class="menu-title">Dashboard</span>
                 </a>

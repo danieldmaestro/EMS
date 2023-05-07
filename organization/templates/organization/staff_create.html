@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="card card-tale">
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <h1 class=" mb-2 display1"> <a style="color: inherit;" href="{% url 'organization:staff_create_form' org_slug=user.organization.slug %}">Create Staff With Form</a></h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card card-tale">
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <h1 class=" mb-2 display1"> <a style="color: inherit;" href="{% url 'organization:staff_create_csv' org_slug=user.organization.slug %}">Create Staff from CSV</a></h1>
+          </div>
+        </div>
+      </div>
+
+</div>
+{% endblock %}

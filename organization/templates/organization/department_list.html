@@ -10,12 +10,12 @@
     <li>
         <h2>{{ dept.name }}</h2>
         <p>{{ dept.description }}</p>
-        <p><a href="{% url 'organization:dept_update' pk=dept.pk %}">Update</a></p>    
+        <p><a href="{% url 'organization:dept_update' pk=dept.pk org_slug=user.organization.slug %}">Update</a></p>    
     </li>
     {% endfor %}
 
 </ul>
 
-<a href="{% url 'organization:dept_create' %}"> Create New Department </a>
+<a href="{% url 'organization:dept_create' org_slug=user.organization.slug %}"> Create New Department </a>
 
 {% endblock%}

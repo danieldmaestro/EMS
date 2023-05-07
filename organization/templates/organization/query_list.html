@@ -11,11 +11,11 @@
         <p><strong>Query Reason:</strong> {{ query.reason }}</p>
         <p><strong>Query Recipient:</strong> {{ query.staff.full_name }}</p>
         <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
-        <p><a href="{% url 'organization:query_response' pk=query.pk %}">View Response</a></p>    
+        <p><a href="{% url 'organization:query_response' org_slug=user.organization.slug pk=query.pk %}">View Response</a></p>    
     </li>
     {% endfor %}
 
 </ul>
 
-<a href="{% url 'organization:query_create' %}"> Create New Query </a>
+<a href="{% url 'organization:query_create' org_slug=user.organization.slug %}"> Create New Query </a>
 {% endblock%}

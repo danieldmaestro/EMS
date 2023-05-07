@@ -24,6 +24,6 @@
 <p> Next of Kin Phone Number: {{ staff.next_of_kin_phone_number }}</p>
 <p> Date employed: {{ staff.date_employed }}</p>
 
-<a href="{% url 'organization:staff_update' pk=staff.pk %}">Update Staff Details</a>
+<a href="{% url 'organization:staff_update' org_slug=user.organization.slug pk=staff.pk %}">Update Staff Details</a>
 
 {% endblock %}

@@ -321,7 +321,7 @@ class CsvFileForm(forms.ModelForm):
         model = CsvFile
         fields = ['file']
         widgets = {
-            'file': forms.FileInput(attrs={'accept': '.csv'})
+            'file': forms.FileInput(attrs={'accept': '.csv', 'class': 'form-control', 'placeholder': 'Upload CSV'})
         }
 
     def clean_file(self):

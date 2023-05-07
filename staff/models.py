@@ -60,8 +60,8 @@ class Staff(models.Model):
     date_employed = models.DateField(auto_now_add=True)
 
     def get_absolute_url(self):
-        return reverse("organization:staff_detail", kwargs={"pk": self.pk})
-    
+        return reverse("organization:staff_detail", kwargs={"pk": self.pk, "org_slug": self.organization.slug })
+
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
     

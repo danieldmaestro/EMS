@@ -9,6 +9,8 @@ from django.utils.text import slugify
 
 from accounts.models import User
 from phonenumber_field.modelfields import PhoneNumberField
+from django.core.validators import FileExtensionValidator
+
 
 
 # Create your models here.
@@ -41,7 +43,7 @@ class Organization(models.Model):
     slug = models.SlugField(unique=True)
 
     def get_absolute_url(self):
-        return reverse("organization:org_detail", kwargs={"pk": self.pk})
+        return reverse("organization:org_detail", kwargs={"pk": self.pk, "org_slug": self.slug})
 
     def __str__(self) -> str:
         return self.name
@@ -79,7 +81,7 @@ def validate_csv_file(value):
         raise ValidationError('File must be a CSV file')   
 
 class CsvFile(models.Model):
-    file = models.FileField(upload_to='csv_files/', validators=[validate_csv_file])
+    file = models.FileField(upload_to='csv_files/', validators=[FileExtensionValidator(['csv'])])
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 

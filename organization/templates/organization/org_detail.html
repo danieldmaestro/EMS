@@ -15,6 +15,6 @@
 <p> Admin Phone number: {{ org.admin_phone_number }}</p>
 <p> Company Email Domain: {{ org.company_email_domain }}</p>
 
-<a href="{% url 'organization:org_update' pk=org.pk %}">Update Organization Details</a>
+<a href="{% url 'organization:org_update' org_slug=user.organization.slug pk=org.pk %}">Update Organization Details</a>
 
 {% endblock %}

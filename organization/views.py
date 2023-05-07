@@ -1,35 +1,35 @@
+import csv
 import random
 import string
 
-from typing import Any, Dict, Optional
-from django.db import models
-from django.db.models.query import QuerySet
-from django.forms.models import BaseModelForm
-from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.views import View
-from django.views.generic import CreateView, UpdateView, ListView, DetailView
-from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, TemplateView, View
+from django.urls import reverse_lazy, reverse
 from .models import Organization, Department, JobTitle
 from staff.models import Staff, Query
 from accounts.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
-from .forms import StaffCreateForm, QueryResponseForm, DepartmentCreateForm, JobTitleCreateForm, QueryCreateForm
+from .forms import StaffCreateForm, DepartmentCreateForm, JobTitleCreateForm, QueryCreateForm, CsvFileForm
 
 
 class AdminDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Staff
     template_name = 'organization/dashboard.html'
     context_object_name = 'staff_list'
+    raise_exception = True
 
     def get_queryset(self):
         return Staff.objects.filter(organization=self.request.user.organization)
     
-def generate_password(n=8):
-    """Generate a random password of length n"""
-    alphabet = string.ascii_letters + string.digits
-    password = ''.join(random.choice(alphabet) for _ in range(n))
-    return password
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+
 
 class OrgDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Organization
@@ -43,6 +43,10 @@ class OrgDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     
     def get_object(self, queryset=None):
         return super().get_object(queryset)
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
 
 
 class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -56,10 +60,29 @@ class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         organization = form.save(commit=False)
         organization.save()
         return super().form_valid(form)
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+
+
+def generate_password(n=8):
+    """Generate a random password of length n"""
+    alphabet = string.ascii_letters + string.digits
+    password = ''.join(random.choice(alphabet) for _ in range(n))
+    return password
+
+
+class StaffCreateChoiceView(LoginRequiredMixin,PermissionRequiredMixin,TemplateView):
+    template_name = "organization/staff_create.html"
+
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
 
 
 
-class StaffCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
+class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     form_class = StaffCreateForm
     success_url = reverse_lazy("organization:admin_dashboard")
     template_name = "organization/staff_create_form.html"
@@ -84,6 +107,10 @@ class StaffCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
         staff.save()
         return super().form_valid(form)
     
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
 class StaffDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Staff
     template_name = "organization/staff_detail.html"
@@ -95,6 +122,11 @@ class StaffDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     
     def get_object(self, queryset=None):
         return super().get_object(queryset)
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
 
 class StaffUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Staff
@@ -111,6 +143,10 @@ class StaffUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         staff.save()
         return super().form_valid(form)
     
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
 
 class DepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Staff
@@ -120,6 +156,10 @@ class DepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_queryset(self):
         oraganization = self.request.user.organization
         return oraganization.departments.all()
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
     
 
 class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -134,6 +174,10 @@ class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
         dept.save()
         return super().form_valid(form)
     
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
 
 class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Department
@@ -147,6 +191,10 @@ class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
         dept.save()
         return super().form_valid(form)
     
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
 class JobTitleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = JobTitle
     template_name = 'organization/job_title_list.html'
@@ -155,6 +203,10 @@ class JobTitleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_queryset(self):
         oraganization = self.request.user.organization
         return oraganization.job_titles.all()
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
     
 
 class JobTitleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -173,6 +225,10 @@ class JobTitleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         job_title.save()
         return super().form_valid(form)
     
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
 
 class JobtTitleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = JobTitle
@@ -185,6 +241,11 @@ class JobtTitleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         job_title = form.save(commit=False)
         job_title.save()
         return super().form_valid(form)
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
     
 class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = QueryCreateForm
@@ -201,6 +262,10 @@ class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         query.organization = self.request.user.organization
         query.save()
         return super().form_valid(form)
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
 
 class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Query
@@ -209,6 +274,10 @@ class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         return self.request.user.organization.queries.all()
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
     
 class QueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Query
@@ -221,85 +290,77 @@ class QueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
     
     def get_object(self, queryset=None):
         return super().get_object(queryset)
+    
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
 
 
+class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
+    template_name = 'organization/staff_create_from_csv.html'
+    
+    def get(self, request, *args, **kwargs):
+        form = CsvFileForm
+        context = {'form': form }
+        return render(request, self.template_name, context)
 
+    def post(self, request, *args, **kwargs):
+        csv_file = request.FILES.get('file')
+        current_org = request.user.organization
+        slug = current_org.slug
 
+        if not csv_file:
+            messages.error(request, 'Please select a CSV file.')
+            return HttpResponseRedirect(reverse("organization:staff_create_csv", kwargs={'org_slug': slug }))
 
+        try:
+            decoded_file = csv_file.read().decode('utf-8').splitlines()
+            reader = csv.DictReader(decoded_file)
+            with transaction.atomic():
+                for row in reader:
+                    staff = Staff(
+                        first_name=row['first_name'],
+                        last_name=row['last_name'],
+                        personal_email=row['personal_email'],
+                        gender=row['gender'],
+                        username=row['username'],
+                        phone_number=row['phone_number'],
+                        date_of_birth=row['date_of_birth'],
+                        state_of_origin=row['state_of_origin'],
+                        staff_status=row['staff_status'],
+                        next_of_kin_name=row['next_of_kin_name'],
+                        next_of_kin_email=row['next_of_kin_email'],
+                        next_of_kin_phone_number=row['next_of_kin_phone_number'],
+                        dept_id=row['dept_id'],
+                        job_title_id=row['job_title_id'],   
+                    )
+                    try:
+                        staff.full_clean()
+                    except ValidationError as e:
+                        messages.error(request, f"Error on row {reader.line_num}: {e}")
+                        return HttpResponseRedirect(reverse("organization:staff_create_csv", kwargs={'org_slug': slug }))
+                    try:
+                        staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name.lower()}@{current_org.company_email_domain}"
+                        staff.organization = current_org
+                        password = generate_password()
+                        user = User.objects.create_user(username=staff.username,
+                                    email=staff.work_email,
+                                    password=password,
+                                    )
+                        staff.user = user
+                        staff.save()
+                    except IntegrityError:
+                        transaction.rollback()
+                        messages.error(request, f"Error on row {reader.line_num}: Staff with username '{row['username']}' already exists.")
+                        return HttpResponseRedirect(reverse("organization:staff_create_csv", kwargs={'org_slug': slug }))
+        except csv.Error as e:
+            messages.error(request, f'Error processing CSV file: {e}')
+            return HttpResponseRedirect(reverse("organization:staff_create_csv", kwargs={'org_slug': slug }))
+            
 
-# class OrganizationUpdateView(UpdateView):
-#     model = Organization
-#     form_class = OrganizationForm
-#     template_name = 'employee/organization_form.html'
+        messages.success(request, 'Staff successfully created.')
+        return HttpResponseRedirect(reverse("organization:admin_dashboard",  kwargs={'org_slug': slug }))
 
-
-# class DepartmentCreateView(CreateView):
-#     model = Department
-#     form_class = DepartmentForm
-#     template_name = 'employee/department_form.html'
-
-
-# class DepartmentUpdateView(UpdateView):
-#     model = Department
-#     form_class = DepartmentForm
-#     template_name = 'employee/department_form.html'
-
-
-# class JobTitleCreateView(CreateView):
-#     model = JobTitle
-#     form_class = JobTitleForm
-#     template_name = 'employee/jobtitle_form.html'
-
-
-# class JobTitleUpdateView(UpdateView):
-#     model = JobTitle
-#     form_class = JobTitleForm
-#     template_name = 'employee/jobtitle_form.html'
-
-
-# class EmployeeCreateView(CreateView):
-#     model = Staff
-#     form_class = EmployeeForm
-#     template_name = 'employee/employee_form.html'
-
-
-# class EmployeeUpdateView(UpdateView):
-#     model = Staff
-#     form_class = EmployeeForm
-#     template_name = 'employee/employee_form.html'
-
-
-# class QueryCreateView(CreateView):
-#     model = Query
-#     form_class = QueryForm
-#     template_name = 'employee/query_form.html'
-
-#     def get_initial(self):
-#         initial = super().get_initial()
-#         employee_id = self.kwargs.get('pk')
-#         employee = get_object_or_404(Staff, id=employee_id)
-#         initial['employee'] = employee
-#         return initial
-
-
-# class QueryResponseUpdateView(UpdateView):
-#     model = Query
-#     form_class = QueryResponseForm
-#     template_name = 'employee/queryresponse_form.html'
-
-
-
-# class EmployeeDetailView(DetailView):
-#     model = Staff
-#     template_name = 'employee/employee_detail.html'
-#     context_object_name = 'employee'
-
-
-# class UserProfileUpdateView(UpdateView):
-#     model = UserProfile
-#     form_class = UserProfileForm
-#     template_name = 'employee/userprofile_form.html'
-#     success_url = reverse_lazy('employee:dashboard')
-
-#     def get_object(self):
-#         return self.request.user.userprofile
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
