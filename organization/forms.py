@@ -96,13 +96,6 @@ class QueryCreateForm(forms.ModelForm):
         return cleaned_data
 
 
-class QueryResponseForm(forms.ModelForm):
-    """Form for query response"""
-    class Meta:
-        model = Query
-        fields = ['response']
-
-
 class StaffCreateForm(forms.ModelForm):
     first_name = forms.CharField(
         label='First Name',

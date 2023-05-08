@@ -30593,3 +30593,10 @@ div.tagsinput span.tag a {
 }
 
 /*# sourceMappingURL=../maps/vertical-layout-light/style.css.map */
+.card-header .profile_img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  margin: 10px auto;
+  border: 2px solid #ccc;
+}

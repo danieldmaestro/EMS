@@ -13,7 +13,7 @@ from django.views import View
 from django.views.generic import CreateView, UpdateView, ListView, DetailView, TemplateView, View
 from django.urls import reverse_lazy, reverse
 from .models import Organization, Department, JobTitle
-from staff.models import Staff, Query
+from staff.models import Staff, Query, UserProfile
 from accounts.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from .forms import StaffCreateForm, DepartmentCreateForm, JobTitleCreateForm, QueryCreateForm, CsvFileForm
@@ -104,11 +104,13 @@ class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView
         staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name.lower()}@{current_org.company_email_domain}"
         staff.organization = current_org
         password = generate_password()
-        print(f"Staff Password: {password}")
+        print(f"{staff.username} {password}")
         # create a new user and assign it to the admin field
         user = User.objects.create_user(username=staff.username,
                                         email=staff.work_email,
                                         password=password,
+                                        first_name=staff.first_name,
+                                        last_name=staff.last_name,
         )
         staff.user = user
         staff.save()
@@ -388,9 +390,12 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
                         staff.work_email = f"{staff.first_name[0].lower()}{staff.last_name.lower()}@{current_org.company_email_domain}"
                         staff.organization = current_org
                         password = generate_password()
+                        print(f"{staff.username} : {password}")
                         user = User.objects.create_user(username=staff.username,
-                                    email=staff.work_email,
-                                    password=password,
+                                        email=staff.work_email,
+                                        password=password,
+                                        first_name=staff.first_name,
+                                        last_name=staff.last_name,
                                     )
                         staff.user = user
                         staff.save()
@@ -405,7 +410,7 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
 
         messages.success(request, 'Staff successfully created.')
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
-        message = f"Dear {staff.fullname()},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
+        message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
         # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         return HttpResponseRedirect(reverse("organization:admin_dashboard",  kwargs={'org_slug': slug }))

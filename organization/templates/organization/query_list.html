@@ -13,6 +13,8 @@
         <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
         <p><a href="{% url 'organization:query_response' org_slug=user.organization.slug pk=query.pk %}">View Response</a></p>    
     </li>
+    {% empty %}
+        <p>No Queries found.</p>
     {% endfor %}
 
 </ul>

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="content-wrapper">
+
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="row">
+          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+            <h3 class="font-weight-bold">Welcome Maestro</h3>
+            <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary">3 unread alerts!</span></h6>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card card-tale">
+              <div class="card-body d-flex justify-content-center align-items-center">
+                <h1 class=" mb-2 display1"> <a style="color: inherit;" href="{% url 'staff:staff_profile' org_slug=user.staff.organization.slug %}">View Profile</a></h1>
+              </div>
+            </div>
+        </div> 
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card card-tale">
+              <div class="card-body d-flex justify-content-center align-items-center">
+                <h1 class=" mb-2 display1"> <a style="color: inherit;" href="{% url 'staff:query_list' org_slug=user.staff.organization.slug %}">View Queries</a></h1>
+              </div>
+            </div>
+        </div>     
+    </div>
+
+
+    <div class="row">
+      <div class="col-md grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-title mb-0">All Staff</p>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover table-borderless">
+                <thead>
+                  <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Job Title</th>
+                    <th>Department</th>
+                    <th>Status</th>
+
+                  </tr>  
+                </thead>
+                <tbody>
+                  {% for staff in staff_list %}
+                    <tr>
+                      <td> {{ staff.first_name }} </td>
+                      <td> {{ staff.last_name }} </td>
+                      <td> <span id="email-{{ staff.pk }}">{{ staff.work_email }}</span> </td>
+                      <td> <span id="phone-{{ staff.pk }}">{{ staff.phone_number }}</span></td>
+                      <td> {{ staff.job_title.role }} </td>
+                      <td> {{ staff.dept.name }} </td>
+                      <td class="font-weight-medium"><div class="badge badge-success">{{ staff.staff_status }}</div></td>
+
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyToClipboard(text) {
+      // Create a temporary input element
+      const input = document.createElement('input');
+      input.setAttribute('value', text);
+      document.body.appendChild(input);
+  
+      // Select the text field
+      input.select();
+      input.setSelectionRange(0, 99999); // For mobile devices
+  
+      // Copy the text inside the text field
+      document.execCommand('copy');
+  
+      // Remove the temporary input element
+      document.body.removeChild(input);
+    }
+  
+    // Add event listeners to email and phone number cells
+    const emailCells = document.querySelectorAll('.table td:nth-child(3)');
+    const phoneCells = document.querySelectorAll('.table td:nth-child(4)');
+  
+    emailCells.forEach(cell => {
+      const email = cell.textContent;
+      cell.innerHTML += ` <a href="#" class="copy-link" onclick="copyToClipboard('${email}')"><i class="mdi mdi-content-copy"></i></a>`;
+    });
+  
+    phoneCells.forEach(cell => {
+      const phone = cell.textContent;
+      cell.innerHTML += ` <a href="#" class="copy-link" onclick="copyToClipboard('${phone}')"><i class="mdi mdi-content-copy"></i></a>`;
+    });
+  </script>
+  
+
+{% endblock %}

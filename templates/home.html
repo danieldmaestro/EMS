@@ -53,8 +53,11 @@
           <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
           <li><a class="nav-link scrollto" href="#about">About</a></li>
           <li><a class="nav-link scrollto" href="#services">Services</a></li>
-          {% if user.is_authenticated %}
+          {% if user.is_authenticated and user.is_staff %}
           <li><a class="nav-link   scrollto" href="{% url 'organization:admin_dashboard' org_slug=user.organization.slug %}">Dashboard</a></li>
+          <li><a class="getstarted scrollto" href="{% url 'accounts:logout' %}">Logout</a></li>
+          {% elif user.is_authenticated %}
+          <li><a class="nav-link   scrollto" href="{% url 'staff:staff_dashboard' org_slug=user.staff.organization.slug %}">Dashboard</a></li>
           <li><a class="getstarted scrollto" href="{% url 'accounts:logout' %}">Logout</a></li>
           {% else %}
           <li><a class="getstarted scrollto" href="{% url 'accounts:login' %}">Login</a></li>

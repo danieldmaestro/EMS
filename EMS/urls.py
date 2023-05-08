@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("", views.HomePage.as_view(), name='home'),
-    path('ems/', include('organization.urls')),
+    path('ems/<slug:org_slug>/dashboard/admin/', include('organization.urls')),
+    path('ems/<slug:org_slug>/dashboard/staff/', include('staff.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

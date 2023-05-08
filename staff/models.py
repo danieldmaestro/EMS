@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from accounts.models import User
 from organization.models import Department, JobTitle, Organization, NigerianPhoneNumberField
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 # Create your models here.
@@ -40,7 +42,7 @@ class Staff(models.Model):
         ("Female", "Female"),
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff", blank=True)
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     personal_email = models.EmailField()
@@ -65,7 +67,22 @@ class Staff(models.Model):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
     
+    
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
+    
+
+class UserProfile(models.Model):
+    staff_profile = models.OneToOneField(Staff, on_delete=models.CASCADE, related_name="userprofile",null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    def __str__(self):
+        return self.staff.first_name
+    
+
+@receiver(post_save, sender=Staff)
+def slugify_name(sender, instance, **kwargs):
+    UserProfile.objects.create(staff_profile=instance)
+
 
 

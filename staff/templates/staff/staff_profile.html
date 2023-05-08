@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block  content %}
+
+<h1>
+    {{ user.staff.first_name }} {{ user.staff.last_name }}
+</h1>
+<h2>
+    <small class="text-muted">
+        {{ user.staff.dept.name }} : {{ user.staff.job_title.role }}
+  </small>
+</h2>
+
+<div class="card-header bg-transparent">
+    {% if user.staff.userprofile.profile_picture %}
+    <img class="profile_img" src="{{ user.staff.userprofile.profile_picture.url }}" alt="staff photo">
+    {% else %}
+    <img class="profile_img" src="" alt="staff photo">
+    {% endif %}
+</div>
+<p><a href="{% url "staff:upload_photo" org_slug=user.staff.organization.slug %}">Upload Image</a></p>
+
+<p> Gender: {{ user.staff.gender }}</p>
+<p> Personal Email: {{ user.staff.personal_email }}</p>
+<p> Work Email: {{ user.staff.work_email }}</p>
+<p> Username: {{ user.staff.username }}</p>
+<p> Phone number: {{ user.staff.phone_number }}</p>
+<p> Date of Birth: {{ user.staff.date_of_birth }}</p>
+<p> State of Origin: {{ user.staff.state_of_origin }}</p>
+<p> Staff Status: {{ user.staff.staff_status }}</p>
+
+
+{% endblock %}

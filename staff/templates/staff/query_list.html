@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>All Queries</h1>
+
+<ul>
+    {% for query in query_list %}
+
+    {% if not query.is_responded %}
+    <li>
+        <p><strong>Query Reason:</strong> {{ query.reason }}</p>
+        <p><a href="{% url 'staff:query_response' org_slug=user.staff.organization.slug pk=query.pk %}">Dispute Query</a></p>    
+    </li>
+    {% endif %}
+    
+    {% empty %}
+        <p>No Queries found.</p>
+    {% endfor %}
+
+</ul>
+
+{% endblock%}
