@@ -43,9 +43,11 @@
                     {{ form.description }}
                 </div>
 
-                <div class="mt-3">
-                    <input class="btn btn-primary mr-2" value="Submit" type="submit">
-                </div>
+                
+                <input class="btn btn-primary mr-2" value="Submit" type="submit">
+                <a href="{% url 'organization:admin_dashboard' org_slug=user.organization.slug %}" class="btn btn-danger">Cancel</a>
+
+                
 
             </form>
         </div>

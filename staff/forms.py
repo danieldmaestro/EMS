@@ -16,7 +16,6 @@ class ProfilePictureForm(forms.Form):
 class QueryResponseForm(forms.ModelForm):
     response = forms.CharField(
         label='Response to for Query',
-        max_length=300,
         widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter Your Response to the query here'}),
     )
     """Form for query response"""

@@ -1,20 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <h1>Job Titles</h1>
 
-<ul>
-    {% for job_title in job_title_list %}
+<div>
 
-    <li>
-        <h2>{{ job_title.role }}</h2>
-        <p>{{ job_title.description }}</p>
-        <p><a href="{% url 'organization:job_title_update' org_slug=user.organization.slug pk=job_title.pk %}">Update</a></p>    
-    </li>
-    {% endfor %}
+    <ul>
+        {% for job_title in job_title_list %}
 
-</ul>
+        <li>
+            <h2>{{ job_title.role }}</h2>
+            <p>{{ job_title.description }}</p>
+            <p><a class="btn btn-primary" href="{% url 'organization:job_title_update' org_slug=user.organization.slug pk=job_title.pk %}">Update</a></p>    
+        </li>
+        <br>
+        {% endfor %}
 
-<a href="{% url 'organization:job_title_create' org_slug=user.organization.slug %}"> Create New Job Title </a>
+    </ul>
+
+    <a class="btn btn-success mr-2 mt-5" href="{% url 'organization:job_title_create' org_slug=user.organization.slug %}"> Create New Job Title </a>
+</div>
+
 {% endblock%}

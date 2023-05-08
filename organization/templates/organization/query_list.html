@@ -3,21 +3,24 @@
 {% block content %}
 
 <h1>All Queries</h1>
+<div>
+        
+    <ul>
+        {% for query in query_list %}
 
-<ul>
-    {% for query in query_list %}
+        <li>
+            <p><strong>Query Reason:</strong> {{ query.reason }}</p>
+            <p><strong>Query Recipient:</strong> {{ query.staff.full_name }}</p>
+            <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
+            <p><a class="btn btn-primary" href="{% url 'organization:query_response' org_slug=user.organization.slug pk=query.pk %}">View Response</a></p>    
+        </li>
+        <br>
+        {% empty %}
+            <p>No Queries found.</p>
+        {% endfor %}
 
-    <li>
-        <p><strong>Query Reason:</strong> {{ query.reason }}</p>
-        <p><strong>Query Recipient:</strong> {{ query.staff.full_name }}</p>
-        <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
-        <p><a href="{% url 'organization:query_response' org_slug=user.organization.slug pk=query.pk %}">View Response</a></p>    
-    </li>
-    {% empty %}
-        <p>No Queries found.</p>
-    {% endfor %}
+    </ul>
 
-</ul>
-
-<a href="{% url 'organization:query_create' org_slug=user.organization.slug %}"> Create New Query </a>
+    <a class="btn btn-success" href="{% url 'organization:query_create' org_slug=user.organization.slug %}"> Create New Query </a>
+</div>
 {% endblock%}

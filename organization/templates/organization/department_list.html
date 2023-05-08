@@ -3,19 +3,23 @@
 {% block content %}
 
 <h1>Departments</h1>
+<div>
+    <ul>
+        {% for dept in dept_list %}
+    
+        <li>
+            <h2>{{ dept.name }}</h2>
+            <p>{{ dept.description }}</p>
+            <p><a class="btn btn-primary mr-2" href="{% url 'organization:dept_update' pk=dept.pk org_slug=user.organization.slug %}">Update</a></p>    
+        </li>
+        <br>
+        {% endfor %}
+    
+    </ul>
 
-<ul>
-    {% for dept in dept_list %}
+    <a class="btn btn-success mr-2 mt-5" href="{% url 'organization:dept_create' org_slug=user.organization.slug %}"> Create New Department </a>
+</div>    
 
-    <li>
-        <h2>{{ dept.name }}</h2>
-        <p>{{ dept.description }}</p>
-        <p><a href="{% url 'organization:dept_update' pk=dept.pk org_slug=user.organization.slug %}">Update</a></p>    
-    </li>
-    {% endfor %}
 
-</ul>
-
-<a href="{% url 'organization:dept_create' org_slug=user.organization.slug %}"> Create New Department </a>
 
 {% endblock%}

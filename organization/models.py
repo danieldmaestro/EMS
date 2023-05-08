@@ -36,9 +36,9 @@ class Organization(models.Model):
     admin_fname = models.CharField(max_length=25)
     admin_lname = models.CharField(max_length=25)
     admin_email = models.EmailField()
-    admin_username = models.CharField(max_length=50, unique=True)
+    admin_username = models.CharField(max_length=25, unique=True)
     admin_phone_number = NigerianPhoneNumberField()
-    company_email_domain = models.CharField(max_length=20, null=True)
+    company_email_domain = models.CharField(max_length=30, null=True)
     admin = models.OneToOneField(User, on_delete=models.CASCADE, related_name='organization', blank=True, null=True)
     slug = models.SlugField(unique=True)
 

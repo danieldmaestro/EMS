@@ -19,11 +19,9 @@ class DepartmentCreateForm(forms.ModelForm):
     """Form to create Department"""
     
     name = forms.CharField(
-        max_length=40,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Department Name'}),
     )
     description = forms.CharField(
-        max_length=255,
         widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Department Description'}),
     )
 
@@ -35,7 +33,6 @@ class DepartmentCreateForm(forms.ModelForm):
 class JobTitleCreateForm(forms.ModelForm):
     """Form to Create Job Title"""
     role = forms.CharField(
-        max_length=40,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Role'}),
     )
     department=forms.ModelChoiceField(
@@ -43,7 +40,6 @@ class JobTitleCreateForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     description = forms.CharField(
-        max_length=255,
         widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Job Description'}),
     )
 
@@ -71,8 +67,7 @@ class QueryCreateForm(forms.ModelForm):
     )
     reason = forms.CharField(
         label='Reason for Query',
-        max_length=60,
-        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Fullname'}),
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Query Reason'}),
     )
     class Meta:
         model = Query
@@ -99,12 +94,10 @@ class QueryCreateForm(forms.ModelForm):
 class StaffCreateForm(forms.ModelForm):
     first_name = forms.CharField(
         label='First Name',
-        max_length=30,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
     )
     last_name = forms.CharField(
         label='Last Name',
-        max_length=30,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
     )
     gender = forms.ChoiceField(
@@ -114,17 +107,14 @@ class StaffCreateForm(forms.ModelForm):
     )
     personal_email = forms.EmailField(
         label='Personal Email',
-        max_length=254,
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Personal Email'}),
     )
     username = forms.CharField(
         label='Username',
-        max_length=150,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
     )
     phone_number = forms.CharField(
         label='Phone Number',
-        max_length=20,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
     )
     date_of_birth = forms.DateField(
@@ -138,17 +128,14 @@ class StaffCreateForm(forms.ModelForm):
     )
     next_of_kin_name = forms.CharField(
         label='Next of Kin Fullname',
-        max_length=60,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Fullname'}),
     )
     next_of_kin_email = forms.EmailField(
         label='Next of Kin Email',
-        max_length=60,
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Email'}),
     )
     next_of_kin_phone_number = forms.CharField(
         label='Next of Kin Phone Number',
-        max_length=15,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Next of Kin Phone Number'}),
     )
     staff_status = forms.ChoiceField(
@@ -166,11 +153,7 @@ class StaffCreateForm(forms.ModelForm):
         queryset=None,
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
-    # organization = forms.ModelChoiceField(
-    #     label='Organization',
-    #     queryset=None,
-    #     widget=forms.Select(attrs={'class': 'form-control'}),
-    # )
+   
     class Meta:
         model = Staff
         fields = (
@@ -186,114 +169,62 @@ class StaffCreateForm(forms.ModelForm):
         self.fields['dept'].queryset = user.organization.departments.all()
         self.fields['job_title'].queryset = user.organization.job_titles.all()
 
+    def clean(self):
+        cleaned_data = super().clean()
+        dept = cleaned_data.get('dept')
+        job_title = cleaned_data.get('job_title')
+        if dept and job_title:
+            if job_title.department != dept:
+                raise ValidationError('Selected job title does not belong to the selected department.')
+        return cleaned_data
+
 
 
 class OrganizationSignUpForm(forms.ModelForm):
     """Organization Signup Form"""
     name = forms.CharField(
         label='Organization Name',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'name',
-                'placeholder': 'Organization Name'
-            }
-        )
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Organization Name'}))
+    
     company_email_domain = forms.CharField(
         label='Company Email Domain Name',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'company_email_domain',
-                'placeholder': 'Company Email Domain'
-            }
-        )
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Company Email Domain'}))
+    
     address = forms.CharField(
         label='Organization Address',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'address',
-                'placeholder': 'Organization Address'
-            }
-        )
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg','placeholder': 'Organization Address'}))
+    
     admin_fname = forms.CharField(
         label='First Name',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'admin_fname',
-                'placeholder': 'Admin First Name'
-            }
-        )
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Admin First Name'}))
+    
     admin_lname = forms.CharField(
         label='Last Name',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'admin_lname',
-                'placeholder': 'Admin Last Name'
-            }
-        )
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Admin Last Name'}))
+    
     admin_username = forms.CharField(
         label='Username',
         widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'admin_username',
-                'placeholder': 'Admin Username'
-            }
-        )
-    )
+            attrs={'class': 'form-control form-control-lg', 'placeholder': 'Admin Username'}))
+    
     admin_email = forms.EmailField(
         label='Email',
-        widget=forms.EmailInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'admin_email',
-                'placeholder': 'Admin Email'
-            }
-        )
-    )
+        widget=forms.EmailInput(attrs={
+                'class': 'form-control form-control-lg', 'placeholder': 'Admin Email'}))
+    
     admin_phone_number = forms.CharField(
         label='Phone Number',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'admin_phone_number',
-                'placeholder': 'Admin Phone Number'
-            }
-        ),
-        error_messages={
-            'invalid': 'Invalid phone number'
-        }
-    )
-
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Admin Phone Number'}),
+        error_messages={'invalid': 'Invalid phone number'})
+    
     password1 = forms.CharField(
         label='Password',
-        widget=forms.PasswordInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'password1',
-                'placeholder': 'Enter Password'
-            }
-        )
-    )
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg','placeholder': 'Enter Password'}))
+    
     password2 = forms.CharField(
         label='Confirm Password',
-        widget=forms.PasswordInput(
-            attrs={
-                'class': 'form-control form-control-lg',
-                'id': 'password2',
-                'placeholder': 'Confirm Password'
-            }
-        )
-    )
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Confirm Password'}))
+    
     class Meta:
         model = Organization
         fields = ["name", "address", "admin_fname", "company_email_domain",
