@@ -7,7 +7,7 @@ class CustomHyperlink(serializers.HyperlinkedRelatedField):
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'org_slug': request.user.organization.slug,
+            'org_slug': request.user.staff.organization.slug,
             'pk': obj.pk
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
@@ -19,14 +19,16 @@ class CustomHyperlink(serializers.HyperlinkedRelatedField):
         }
         return self.get_queryset().get(**lookup_kwargs)
     
+
 class CustomHyperlinkIdentity(serializers.HyperlinkedIdentityField, CustomHyperlink):
     pass
+
 
 class OrgCustomHyperlink(serializers.HyperlinkedRelatedField):
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'org_slug': request.user.organization.slug,
+            'org_slug': request.user.staff.organization.slug,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
@@ -35,12 +37,11 @@ class OrgCustomHyperlink(serializers.HyperlinkedRelatedField):
            'organization__slug': view_kwargs['org_slug'],
         }
         return self.get_queryset().get(**lookup_kwargs)
-
-
+    
 class OrgCustomHyperlinkIdentity(serializers.HyperlinkedIdentityField, CustomHyperlink):
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'org_slug': obj.slug,
+            'org_slug': request.user.staff.organization.slug,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
@@ -49,6 +50,7 @@ class OrgCustomHyperlinkIdentity(serializers.HyperlinkedIdentityField, CustomHyp
            'organization__slug': view_kwargs['org_slug'],
         }
         return self.get_queryset().get(**lookup_kwargs)
+
 
 
 class QuerySerializer(serializers.HyperlinkedModelSerializer):
@@ -81,7 +83,8 @@ class StaffSerializer(serializers.HyperlinkedModelSerializer):
         
 
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
-    staff_profile = CustomHyperlink(view_name='org_api:staff-detail', read_only=True)
+    url = OrgCustomHyperlinkIdentity(view_name='staff_api:staff_profile', read_only = True)
+    staff_profile = CustomHyperlink(view_name='org_api:staff-detail', read_only=True) #fix this url
     
     class Meta:
         model = UserProfile

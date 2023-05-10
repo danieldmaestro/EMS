@@ -4,7 +4,7 @@ from .serializers import StaffSerializer, QuerySerializer, UserProfileSerializer
 from ..models import Staff, Query, UserProfile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import FileUploadParser
-from organization.api.permissions import IsPartOfOrg
+from .permissions import IsPartOfOrg
 
 
 class StaffListView(generics.ListAPIView):
@@ -12,7 +12,7 @@ class StaffListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsPartOfOrg]
 
     def get_queryset(self):
-        return Staff.objects.filter(organization=self.request.user.organization)
+        return Staff.objects.filter(organization=self.request.user.staff.organization)
     
 
 class StaffUserProfileDetailAPIView(generics.RetrieveAPIView):
@@ -21,7 +21,7 @@ class StaffUserProfileDetailAPIView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated, IsPartOfOrg]
     
     def get_object(self):
-        return self.user.staff.userprofile
+        return self.request.user.staff.userprofile
     
 
 class StaffPictureUploadAPIView(generics.UpdateAPIView):
@@ -31,7 +31,7 @@ class StaffPictureUploadAPIView(generics.UpdateAPIView):
     parser_class = (FileUploadParser,)
 
     def get_object(self):
-        return self.user.staff.userprofile
+        return self.request.user.staff.userprofile
 
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
