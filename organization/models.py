@@ -31,7 +31,7 @@ class NigerianPhoneNumberField(PhoneNumberField):
         return super().formfield(**defaults)
 
 class Organization(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     address = models.CharField(max_length=255)
     admin_fname = models.CharField(max_length=25)
     admin_lname = models.CharField(max_length=25)
@@ -50,7 +50,7 @@ class Organization(models.Model):
     
 
 class Department(models.Model):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     description = models.TextField(max_length=255)
     slug = models.SlugField(blank=True, null=True)
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="departments", blank=True, null=True)
@@ -63,7 +63,7 @@ class Department(models.Model):
 
 
 class JobTitle(models.Model):
-    role = models.CharField(max_length=25)
+    role = models.CharField(max_length=25, unique=True)
     description = models.TextField(max_length=255, null=True, blank=True)
     department = models.ForeignKey('Department', on_delete=models.CASCADE, related_name="job_titles", blank=True, null=True)
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="job_titles", blank=True, null=True)

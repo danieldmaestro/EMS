@@ -88,7 +88,6 @@ class StaffCreateChoiceView(LoginRequiredMixin,PermissionRequiredMixin,TemplateV
         return self.request.user.organization.slug == org_slug
 
 
-
 class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     form_class = StaffCreateForm
     template_name = "organization/staff_create_form.html"
@@ -113,7 +112,8 @@ class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView
                                         last_name=staff.last_name,
         )
         staff.user = user
-        staff.save()
+        staff_instance = staff.save()
+        UserProfile.objects.create(staff_profile=staff_instance)
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
         message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
@@ -156,7 +156,6 @@ class StaffUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             'next_of_kin_phone_number', 'staff_status', 'dept', 'job_title',
         )
 
-    
     def form_valid(self, form):
         staff = form.save(commit=False)
         staff.save()
@@ -398,7 +397,8 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
                                         last_name=staff.last_name,
                                     )
                         staff.user = user
-                        staff.save()
+                        staff_instance = staff.save()
+                        UserProfile.objects.create(staff_profile=staff_instance)
                     except IntegrityError:
                         transaction.rollback()
                         messages.error(request, f"Error on row {reader.line_num}: Staff with username '{row['username']}' already exists.")

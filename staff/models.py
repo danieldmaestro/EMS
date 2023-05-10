@@ -21,7 +21,7 @@ class Query(models.Model):
     
 
 class Staff(models.Model):
-
+    
     STATE_CHOICES = [(state, state) for state in (
         'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 
         'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'FCT',
@@ -47,7 +47,7 @@ class Staff(models.Model):
     last_name = models.CharField(max_length=25)
     personal_email = models.EmailField()
     gender = models.CharField(max_length=10, choices=GENDER)
-    work_email = models.EmailField(blank=True)
+    work_email = models.EmailField(blank=True, null=True, unique=True)
     username = models.CharField(max_length=25, unique=True)
     phone_number = NigerianPhoneNumberField()
     date_of_birth = models.DateField()
@@ -80,9 +80,9 @@ class UserProfile(models.Model):
         return self.staff.first_name
     
 
-@receiver(post_save, sender=Staff)
-def slugify_name(sender, instance, **kwargs):
-    UserProfile.objects.create(staff_profile=instance)
+# @receiver(post_save, sender=Staff)
+# def slugify_name(sender, instance, **kwargs):
+#     UserProfile.objects.create(staff_profile=instance)
 
 
 

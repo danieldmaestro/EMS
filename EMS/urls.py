@@ -19,11 +19,18 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
+from organization.api.views import OrganizationCreateAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("", views.HomePage.as_view(), name='home'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("api/admin/", OrganizationCreateAPIView.as_view(), name="signup"),
+    path("api/admin/<slug:org_slug>/", include("organization.api.urls", namespace="org_api")),
+    path("api/staff/<slug:org_slug>/", include("staff.api.urls", namespace="staff_api")),
     path('ems/<slug:org_slug>/dashboard/admin/', include('organization.urls')),
     path('ems/<slug:org_slug>/dashboard/staff/', include('staff.urls')),
 
