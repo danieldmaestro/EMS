@@ -42,6 +42,7 @@ class OrgCustomHyperlinkedIdentityField(serializers.HyperlinkedRelatedField):
         }
         return self.get_queryset().get(**lookup_kwargs)
     
+    
 class StaffCustomHyperlinkedIdentityField(serializers.HyperlinkedIdentityField, CustomHyperlinkedRelatedField):
     """Custom HyperlinkedIdentityField for staff URLs with one lookup kwarg(org_slug)"""
 
@@ -56,7 +57,6 @@ class StaffCustomHyperlinkedIdentityField(serializers.HyperlinkedIdentityField, 
            'organization__slug': view_kwargs['org_slug'],
         }
         return self.get_queryset().get(**lookup_kwargs)
-
 
 
 class QuerySerializer(serializers.HyperlinkedModelSerializer):
@@ -103,6 +103,7 @@ class StaffSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.ValidationError("The job title's department does not match the given department.")
 
         return data
+
 
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     url = StaffCustomHyperlinkedIdentityField(view_name='staff_api:staff_profile', read_only = True)

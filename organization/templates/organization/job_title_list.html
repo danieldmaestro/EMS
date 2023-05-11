@@ -1,24 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Job Titles</h1>
+<div class="content-wrapper">
 
-<div>
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>Job Titles</h2>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <ul>
-        {% for job_title in job_title_list %}
+    <div>
+        <ul>
+            {% for job_title in job_title_list %}
 
-        <li>
-            <h2>{{ job_title.role }}</h2>
-            <p>{{ job_title.description }}</p>
-            <p><a class="btn btn-primary" href="{% url 'organization:job_title_update' org_slug=user.organization.slug pk=job_title.pk %}">Update</a></p>    
-        </li>
-        <br>
-        {% endfor %}
+            <li>
+                <h3>{{ job_title.role }}</h3>
+                <p class="text-primary">{{ job_title.department.name }}</p>
+                <p>{{ job_title.description }}</p>
+                <p><a class="btn btn-primary" href="{% url 'organization:job_title_update' org_slug=user.organization.slug pk=job_title.pk %}">Update</a></p>    
+            </li>
+            <br>
+            {% endfor %}
 
-    </ul>
+        </ul>
 
-    <a class="btn btn-success mr-2 mt-5" href="{% url 'organization:job_title_create' org_slug=user.organization.slug %}"> Create New Job Title </a>
+        <a class="btn btn-success mr-2 mt-4" href="{% url 'organization:job_title_create' org_slug=user.organization.slug %}"> Create New Job Title </a>
+    </div>
 </div>
-
 {% endblock%}

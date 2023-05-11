@@ -18,16 +18,16 @@
     <img class="profile_img" src="" alt="staff photo">
     {% endif %}
 </div>
-<p><a href="{% url "staff:upload_photo" org_slug=user.staff.organization.slug %}">Upload Image</a></p>
+<p><a class="btn btn-primary mt-3" href="{% url "staff:upload_photo" org_slug=user.staff.organization.slug %}">Upload New Image</a></p>
 
-<p> Gender: {{ user.staff.gender }}</p>
-<p> Personal Email: {{ user.staff.personal_email }}</p>
-<p> Work Email: {{ user.staff.work_email }}</p>
-<p> Username: {{ user.staff.username }}</p>
-<p> Phone number: {{ user.staff.phone_number }}</p>
-<p> Date of Birth: {{ user.staff.date_of_birth }}</p>
-<p> State of Origin: {{ user.staff.state_of_origin }}</p>
-<p> Staff Status: {{ user.staff.staff_status }}</p>
+<p> <strong>Gender:</strong> {{ user.staff.gender }}</p>
+<p> <strong>Personal Email:</strong> {{ user.staff.personal_email }}</p>
+<p> <strong>Work Email:</strong> {{ user.staff.work_email }}</p>
+<p> <strong>Username:</strong> {{ user.staff.username }}</p>
+<p> <strong>Phone number:</strong> {{ user.staff.phone_number }}</p>
+<p> <strong>Date of Birth:</strong> {{ user.staff.date_of_birth }}</p>
+<p> <strong>State of Origin:</strong> {{ user.staff.state_of_origin }}</p>
+<p> <strong>Staff Status:</strong> {{ user.staff.staff_status }}</p>
 
 
 {% endblock %}

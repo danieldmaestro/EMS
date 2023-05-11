@@ -1,31 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="content-wrapper">
+    <h1>
+        {{ staff.first_name }} {{ staff.last_name }}
+    </h1>
+    <h2>
+        <small class="text-muted">
+            {{ staff.dept.name }} : {{ staff.job_title.role }}
+    </small>
+    </h2>
 
-<h1>
-    {{ staff.first_name }} {{ staff.last_name }}
-</h1>
-<h2>
-    <small class="text-muted">
-        {{ staff.dept.name }} : {{ staff.job_title.role }}
-  </small>
-</h2>
-<div>
-        
-    <p> Gender: {{ staff.gender }}</p>
-    <p> Personal Email: {{ staff.personal_email }}</p>
-    <p> Work Email: {{ staff.work_email }}</p>
-    <p> Username: {{ staff.username }}</p>
-    <p> Phone number: {{ staff.phone_number }}</p>
-    <p> Date of Birth: {{ staff.date_of_birth }}</p>
-    <p> SOO: {{ staff.state_of_origin }}</p>
-    <p> Staff Status: {{ staff.staff_status }}</p>
-    <p> Next of Kin Name: {{ staff.next_of_kin_name }}</p>
-    <p> Next of Kin Email: {{ staff.next_of_kin_email }}</p>
-    <p> Next of Kin Phone Number: {{ staff.next_of_kin_phone_number }}</p>
-    <p> Date employed: {{ staff.date_employed }}</p>
+    <h3 class="mt-5">Bio Data: </h3>
+    <br>
+    <div>   
+        <p> <strong>Gender:</strong> {{ staff.gender }}</p>
+        <p> <strong>Personal Email:</strong> {{ staff.personal_email }}</p>
+        <p> <strong>Work Email:</strong> {{ staff.work_email }}</p>
+        <p> <strong>Username:</strong> {{ staff.username }}</p>
+        <p> <strong>Phone number:</strong> {{ staff.phone_number }}</p>
+        <p> <strong>Date of Birth:</strong> {{ staff.date_of_birth }}</p>
+        <p> <strong>State of Origin: </strong> {{ staff.state_of_origin }}</p>
+        <p> <strong>Staff Status: </strong> {{ staff.staff_status }}</p>
+        <p> <strong>Next of Kin Name:</strong> {{ staff.next_of_kin_name }}</p>
+        <p> <strong>Next of Kin Email: </strong> {{ staff.next_of_kin_email }}</p>
+        <p> <strong>Next of Kin Phone Number:</strong> {{ staff.next_of_kin_phone_number }}</p>
+        <p> <strong>Date employed:</strong> {{ staff.date_employed }}</p>
 
-    <a class="btn btn-primary mt-5" href="{% url 'organization:staff_update' org_slug=user.organization.slug pk=staff.pk %}">Update Staff Details</a>
+        <a class="btn btn-primary mt-5" href="{% url 'organization:staff_update' org_slug=user.organization.slug pk=staff.pk %}">Update Staff Details</a>
 
+    </div>
 </div>
 {% endblock %}

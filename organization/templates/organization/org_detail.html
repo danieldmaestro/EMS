@@ -1,20 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="content-wrapper">
 
-<h1>
-    {{ org.name }}
-</h1>
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>{{ org.name }}</h2>
+                    <p class="text-muted">{{ org.address }} </small></p>
 
-<h2>Address: <small class="text-muted">{{ org.address }} </small></h2>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<p> Admin First Name: {{ org.admin_fname }}</p>
-<p> Admin Last Name: {{ org.admin_lname }}</p>
-<p> Admin Email: {{ org.admin_email }}</p>
-<p> Admin Username: {{ org.admin_username }}</p>
-<p> Admin Phone number: {{ org.admin_phone_number }}</p>
-<p> Company Email Domain: {{ org.company_email_domain }}</p>
 
-<a href="{% url 'organization:org_update' org_slug=user.organization.slug pk=org.pk %}">Update Organization Details</a>
 
+    <p> <strong>Admin First Name:</strong> {{ org.admin_fname }}</p>
+    <p> <strong>Admin Last Name:</strong> {{ org.admin_lname }}</p>
+    <p> <strong>Admin Email:</strong> {{ org.admin_email }}</p>
+    <p> <strong>Admin Username:</strong> {{ org.admin_username }}</p>
+    <p> <strong>Admin Phone number:</strong> {{ org.admin_phone_number }}</p>
+    <p> <strong>Company Email Domain:</strong> {{ org.company_email_domain }}</p>
+
+    <a class="btn btn-primary mt-4" href="{% url 'organization:org_update' org_slug=user.organization.slug pk=org.pk %}">Update Organization Details</a>
+
+</div>
 {% endblock %}

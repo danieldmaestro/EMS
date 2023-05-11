@@ -7,12 +7,16 @@
 <ul>
     {% for query in query_list %}
 
-    {% if not query.is_responded %}
     <li>
         <p><strong>Query Reason:</strong> {{ query.reason }}</p>
-        <p><a href="{% url 'staff:query_response' org_slug=user.staff.organization.slug pk=query.pk %}">Dispute Query</a></p>    
+        {% if not query.is_responded %}
+        <p><a href="{% url 'staff:query_response' org_slug=user.staff.organization.slug pk=query.pk %}">Dispute Query</a></p>
+        {% else %}
+        <p><strong>Query Response:</strong> {{ query.response }}</p>
+        <p class="text-danger">Resolved</p>
+        {% endif %}
+
     </li>
-    {% endif %}
     
     {% empty %}
         <p>No Queries found.</p>

@@ -1,21 +1,23 @@
 import csv
-import string
 import random
+import string
 
-from django.db import transaction, IntegrityError
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, status 
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response 
+
 from ..models import Department,Organization, JobTitle
 from .serializers import OrganizationSerializer, DepartmentSerializer, JobTitleSerializer
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import IsPartOfOrg
 from accounts.models import User
-from staff.models import Staff, Query
 from staff.api.serializers import StaffSerializer, QuerySerializer
-from staff.models import UserProfile
+from staff.models import Staff, Query, UserProfile
 
 
 class DepartmentListCreateAPIView(generics.ListCreateAPIView):
@@ -207,6 +209,10 @@ class StaffCreateFromCSVAPIView(generics.CreateAPIView):
         except csv.Error as e:
             return Response({"Error": f'Error processing CSV file: {e}'})
         
+        subject = f"{current_org.name}: LOGIN CREDENTIALS"
+        message = f"Dear {staff_instance.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff_instance.username}\nPassword: {password}"
+        recipient_list = [staff_instance.personal_email,]
+        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
             
 

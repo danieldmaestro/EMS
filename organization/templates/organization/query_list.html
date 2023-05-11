@@ -2,25 +2,41 @@
 
 {% block content %}
 
-<h1>All Queries</h1>
-<div>
-        
-    <ul>
-        {% for query in query_list %}
+<div class="content-wrapper">
 
-        <li>
-            <p><strong>Query Reason:</strong> {{ query.reason }}</p>
-            <p><strong>Query Recipient:</strong> {{ query.staff.full_name }}</p>
-            <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
-            <p><a class="btn btn-primary" href="{% url 'organization:query_response' org_slug=user.organization.slug pk=query.pk %}">View Response</a></p>    
-        </li>
-        <br>
-        {% empty %}
-            <p>No Queries found.</p>
-        {% endfor %}
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h2>All Queries</h2>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    </ul>
+    <div> 
+        <ul>
+            {% for query in query_list %}
 
-    <a class="btn btn-success" href="{% url 'organization:query_create' org_slug=user.organization.slug %}"> Create New Query </a>
+            <li>
+                <p><strong>Query Reason:</strong> {{ query.reason }}</p>
+                <p><strong>Query Recipient:</strong> {{ query.staff.full_name }}</p>
+                <p><strong>Query Requester:</strong> {{ query.query_requester.full_name }}</p>
+                {% if query.is_responded %}
+                <p><a class="btn btn-primary" href="{% url 'organization:query_response' org_slug=user.organization.slug pk=query.pk %}">View Response</a></p>
+                {% else%}
+                <p class="text-danger">Not yet responded. </p>    
+                {% endif %}
+            </li>
+            <br>
+            {% empty %}
+                <p>No Queries found.</p>
+            {% endfor %}
+
+        </ul>
+
+        <a class="btn btn-success" href="{% url 'organization:query_create' org_slug=user.organization.slug %}"> Create New Query </a>
+    </div>
+
 </div>
 {% endblock%}

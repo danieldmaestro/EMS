@@ -2,7 +2,6 @@ import csv
 import random
 import string
 
-from accounts.models import User
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -16,8 +15,9 @@ from django.views import View
 from django.views.generic import (CreateView, DetailView, ListView, TemplateView,
                                     UpdateView, View)
 from .forms import (CsvFileForm, DepartmentCreateForm, JobTitleCreateForm,
-                    QueryCreateForm, StaffCreateForm)
+                    QueryCreateForm, StaffCreateForm, OrganizationSignUpForm)
 from .models import Department, JobTitle, Organization
+from accounts.models import User
 from staff.models import Query, Staff, UserProfile
 
 
@@ -62,6 +62,7 @@ class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def form_valid(self, form):
         organization = form.save(commit=False)
         organization.save()
+        messages.success(self.request, "Organization Details Updated Successfully.")
         return super().form_valid(form)
     
     def has_permission(self):
@@ -78,7 +79,7 @@ class StaffStatusUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateV
     model = Staff
     template_name = "organization/staff_status_update_form.html"
     fields = ['staff_status']
-
+    
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
@@ -134,7 +135,8 @@ class StaffCreateFormView(LoginRequiredMixin,PermissionRequiredMixin, CreateView
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
         message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
-        # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+        messages.success(self.request, "Staff created successfully.")
         return super().form_valid(form)
     
     def has_permission(self):
@@ -189,8 +191,8 @@ class DepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'dept_list'
 
     def get_queryset(self):
-        oraganization = self.request.user.organization
-        return oraganization.departments.all()
+        queryset = self.request.user.organization.departments.all()
+        return queryset.order_by('name')
     
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
@@ -247,8 +249,8 @@ class JobTitleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'job_title_list'
 
     def get_queryset(self):
-        oraganization = self.request.user.organization
-        return oraganization.job_titles.all()
+        queryset = self.request.user.organization.job_titles.all()
+        return queryset.order_by('role')
     
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
@@ -432,7 +434,7 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
         message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
-        # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         return HttpResponseRedirect(reverse("organization:admin_dashboard",  kwargs={'org_slug': slug }))
 
     def has_permission(self):

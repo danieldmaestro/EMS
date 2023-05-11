@@ -23,12 +23,23 @@
   <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" />
 </head>
 <body>
+    <style>
+      .messages.vanish {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+      }
+    </style>
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
       <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          {% if user.is_authenticated and user.is_staff %}
           <a class="navbar-brand brand-logo mr-5" href="{% url 'organization:admin_dashboard' org_slug=user.organization.slug %}"><img src="{% static 'images/logo.svg' %}" class="mr-2" alt="logo"/></a>
           <a class="navbar-brand brand-logo-mini" href="{% url 'organization:admin_dashboard' org_slug=user.organization.slug %}"><img src="{% static 'images/logo-mini.svg' %}" alt="logo"/></a>
+          {% elif user.is_authenticated %}
+          <a class="navbar-brand brand-logo mr-5" href="{% url 'staff:staff_dashboard' org_slug=user.staff.organization.slug %}"><img src="{% static 'images/logo.svg' %}" class="mr-2" alt="logo"/></a>
+          <a class="navbar-brand brand-logo-mini" href="{% url 'staff:staff_dashboard' org_slug=user.staff.organization.slug %}"><img src="{% static 'images/logo-mini.svg' %}" alt="logo"/></a>
+          {% endif%}
         </div>
 
         <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
@@ -49,7 +60,7 @@
             
             <li class="nav-item nav-profile dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                <img src="{% static 'images/faces/face28.jpg' %}" alt="profile"/>
+                <img src="{% static 'images/logo-mini.svg' %}" alt="profile"/>
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
                 <a class="dropdown-item">
@@ -91,15 +102,25 @@
             </ul>
           </nav>
         <div class="main-panel">
-      {% if user.is_authenticated %}
+          {% if messages %}
+          <div class="messages">
+              {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+          </div>
+          {% endif %}
 
-            {% block content %}
+          {% if user.is_authenticated %}
 
-            {% endblock %}
+                {% block content %}
 
-      {% else%}
-          <h1>Access Denied.</h1>
-      {% endif %}
+                {% endblock %}
+
+          {% else%}
+              <h1>Access Denied.</h1>
+          {% endif %}
 
             <footer class="footer">
                 <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -107,14 +128,23 @@
                   <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
                 </div>
             </footer>
-        </div>
+          </div>
       <!-- main-panel ends -->
 
       </div>
     <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->
+    <script>
+      const messages = document.querySelectorAll('.messages');
 
+      // Remove each message after 5 seconds
+      messages.forEach(message => {
+        setTimeout(() => {
+            message.classList.add('vanish');
+          }, 5000);
+          });
+    </script>
       
     <!-- plugins:js -->
     <script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
@@ -135,7 +165,6 @@
     <!-- endinject -->
     <!-- Custom js for this page-->
     <script src="{% static 'js/dashboard.js' %}"></script>
-    <script src="{% static 'js/Chart.roundedBarCharts.js'%}"></script>
     <!-- End custom js for this page-->
 </body>
 
