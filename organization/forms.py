@@ -1,15 +1,5 @@
-
 from django import forms
-from django.utils.text import slugify
-
-from accounts.models import User
-from phonenumber_field.modelfields import PhoneNumberField
 from django.core.exceptions import ValidationError
-from django.urls import reverse
-from django.conf import settings
-from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 from .models import CsvFile, Department, JobTitle, Organization
 from staff.models import Query, Staff
@@ -179,7 +169,6 @@ class StaffCreateForm(forms.ModelForm):
         return cleaned_data
 
 
-
 class OrganizationSignUpForm(forms.ModelForm):
     """Organization Signup Form"""
     name = forms.CharField(
@@ -238,7 +227,6 @@ class OrganizationSignUpForm(forms.ModelForm):
             raise forms.ValidationError('Passwords do not match')
         return password2
     
-
 
 class CsvFileForm(forms.ModelForm):
     class Meta:

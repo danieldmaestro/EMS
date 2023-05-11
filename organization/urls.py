@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import include, path
 from . import views
 
 app_name = 'organization'
@@ -12,6 +12,7 @@ urlpatterns = [
     path('staff/create/form/', views.StaffCreateFormView.as_view(), name='staff_create_form'),
     path('staff/<int:pk>/', views.StaffDetailView.as_view(), name="staff_detail"),
     path('staff/<int:pk>/update/', views.StaffUpdateView.as_view(), name="staff_update"),
+    path('staff/<int:pk>/status_update/', views.StaffStatusUpdateView.as_view(), name='status_update_form'),
     path('departments/', views.DepartmentListView.as_view(), name="department_list"),
     path('departments/create/', views.DepartmentCreateView.as_view(), name="dept_create"),
     path('departments/<int:pk>/update', views.DepartmentUpdateView.as_view(), name="dept_update"),

@@ -1,9 +1,10 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .serializers import StaffSerializer, QuerySerializer, UserProfileSerializer
-from ..models import Staff, Query, UserProfile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import FileUploadParser
+
+from ..models import Staff, Query, UserProfile
+from .serializers import StaffSerializer, QuerySerializer, UserProfileSerializer
 from .permissions import IsPartOfOrg
 
 
@@ -16,7 +17,6 @@ class StaffListView(generics.ListAPIView):
     
 
 class StaffUserProfileDetailAPIView(generics.RetrieveAPIView):
-    queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsPartOfOrg]
     
@@ -25,7 +25,6 @@ class StaffUserProfileDetailAPIView(generics.RetrieveAPIView):
     
 
 class StaffPictureUploadAPIView(generics.UpdateAPIView):
-    queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsPartOfOrg]
     parser_class = (FileUploadParser,)
@@ -66,6 +65,3 @@ class QueryUpdateResponse(generics.UpdateAPIView):
 
     def get_queryset(self):
         return self.request.user.staff.queries.all()
-
-    def get_serializer_class(self):
-        return self.serializer_class

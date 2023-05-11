@@ -1,9 +1,7 @@
+from accounts.models import User
 from django.db import models
 from django.urls import reverse
-from accounts.models import User
-from organization.models import Department, JobTitle, Organization, NigerianPhoneNumberField
-from django.dispatch import receiver
-from django.db.models.signals import post_save
+from organization.models import Department, JobTitle, NigerianPhoneNumberField, Organization
 
 
 # Create your models here.
@@ -79,10 +77,5 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.staff.first_name
     
-
-# @receiver(post_save, sender=Staff)
-# def slugify_name(sender, instance, **kwargs):
-#     UserProfile.objects.create(staff_profile=instance)
-
 
 

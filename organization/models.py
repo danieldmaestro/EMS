@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.validators import RegexValidator
+from django.core.validators import FileExtensionValidator, RegexValidator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import pre_save
@@ -9,9 +9,6 @@ from django.utils.text import slugify
 
 from accounts.models import User
 from phonenumber_field.modelfields import PhoneNumberField
-from django.core.validators import FileExtensionValidator
-
-
 
 # Create your models here.
 class NigerianPhoneNumberField(PhoneNumberField):
@@ -29,6 +26,7 @@ class NigerianPhoneNumberField(PhoneNumberField):
         }
         defaults.update(kwargs)
         return super().formfield(**defaults)
+
 
 class Organization(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -83,7 +81,6 @@ def validate_csv_file(value):
 class CsvFile(models.Model):
     file = models.FileField(upload_to='csv_files/', validators=[FileExtensionValidator(['csv'])])
     uploaded_at = models.DateTimeField(auto_now_add=True)
-
 
 @receiver(pre_save, sender=Organization)
 def slugify_name(sender, instance, **kwargs):

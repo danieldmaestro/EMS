@@ -1,10 +1,11 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
+
 from ..models import Organization, Department, JobTitle
 from staff.models import Staff
-from rest_framework.reverse import reverse
-# from staff.api.serializers import CustomHyperlink, CustomHyperlinkIdentity, OrgCustomHyperlinkIdentity, OrgCustomHyperlink
 
-class CustomHyperlink(serializers.HyperlinkedRelatedField):
+
+class CustomHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
@@ -20,10 +21,12 @@ class CustomHyperlink(serializers.HyperlinkedRelatedField):
         }
         return self.get_queryset().get(**lookup_kwargs)
     
-class CustomHyperlinkIdentity(serializers.HyperlinkedIdentityField, CustomHyperlink):
+
+class CustomHyperlinkedIdentityField(serializers.HyperlinkedIdentityField, CustomHyperlinkedRelatedField):
     pass
 
-class OrgCustomHyperlink(serializers.HyperlinkedRelatedField):
+
+class OrgCustomHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
@@ -37,7 +40,8 @@ class OrgCustomHyperlink(serializers.HyperlinkedRelatedField):
         }
         return self.get_queryset().get(**lookup_kwargs)
     
-class OrgCustomHyperlinkIdentity(serializers.HyperlinkedIdentityField, CustomHyperlink):
+
+class OrgCustomHyperlinkedIdentityField(serializers.HyperlinkedIdentityField, CustomHyperlinkedRelatedField):
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
             'org_slug': obj.slug,
@@ -52,7 +56,7 @@ class OrgCustomHyperlinkIdentity(serializers.HyperlinkedIdentityField, CustomHyp
     
     
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
-    url = OrgCustomHyperlinkIdentity(view_name="org_api:organization-detail", read_only=True)
+    url = OrgCustomHyperlinkedIdentityField(view_name="org_api:organization-detail", read_only=True)
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
@@ -73,8 +77,8 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
-    url = CustomHyperlinkIdentity(view_name="org_api:department-detail", read_only=True)
-    organization = OrgCustomHyperlink(view_name='org_api:organization-detail', read_only=True)
+    url = CustomHyperlinkedIdentityField(view_name="org_api:department-detail", read_only=True)
+    organization = OrgCustomHyperlinkedRelatedField(view_name='org_api:organization-detail', read_only=True)
 
     class Meta:
         model = Department
@@ -82,9 +86,9 @@ class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class JobTitleSerializer(serializers.HyperlinkedModelSerializer):
-    url = CustomHyperlinkIdentity(view_name="org_api:job-title-detail", read_only=True)
-    department = CustomHyperlink(view_name='org_api:department-detail', read_only=True)
-    organization = OrgCustomHyperlink(view_name='org_api:organization-detail', read_only=True)
+    url = CustomHyperlinkedIdentityField(view_name="org_api:job-title-detail", read_only=True)
+    department = CustomHyperlinkedRelatedField(view_name='org_api:department-detail', read_only=True)
+    organization = OrgCustomHyperlinkedRelatedField(view_name='org_api:organization-detail', read_only=True)
     dept_name = serializers.CharField(write_only=True)
 
     class Meta:

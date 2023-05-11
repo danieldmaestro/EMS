@@ -1,6 +1,5 @@
-
+from django.contrib.auth.models import PermissionsMixin, AbstractUser, UserManager
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser, UserManager
 # from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 

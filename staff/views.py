@@ -1,10 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
-from .models import Staff, Query, UserProfile
-from django.views.generic import UpdateView, ListView, DetailView, TemplateView, FormView
-from .forms import ProfilePictureForm, QueryResponseForm
 from django.urls import reverse_lazy
+from django.views.generic import DetailView, FormView, ListView, TemplateView, UpdateView
 
+from .forms import ProfilePictureForm, QueryResponseForm
+from .models import Query, Staff, UserProfile
 
 # Create your views here.
 class StaffDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -51,6 +51,7 @@ class UploadProfilePictureView(LoginRequiredMixin, PermissionRequiredMixin, Form
         org_slug = self.kwargs['org_slug']
         return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
     
+
 class StaffQueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Query
     template_name = "staff/query_list.html"
@@ -66,6 +67,7 @@ class StaffQueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         org_slug = self.kwargs['org_slug']
         return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
     
+
 class StaffQueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Query
     form_class = QueryResponseForm

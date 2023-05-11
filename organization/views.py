@@ -2,21 +2,23 @@ import csv
 import random
 import string
 
-from django.contrib import messages
-from django.core.exceptions import ValidationError
+from accounts.models import User
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, UpdateView, ListView, DetailView, TemplateView, View
-from django.urls import reverse_lazy, reverse
-from .models import Organization, Department, JobTitle
-from staff.models import Staff, Query, UserProfile
-from accounts.models import User
-from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
-from .forms import StaffCreateForm, DepartmentCreateForm, JobTitleCreateForm, QueryCreateForm, CsvFileForm
+from django.views.generic import (CreateView, DetailView, ListView, TemplateView,
+                                    UpdateView, View)
+from .forms import (CsvFileForm, DepartmentCreateForm, JobTitleCreateForm,
+                    QueryCreateForm, StaffCreateForm)
+from .models import Department, JobTitle, Organization
+from staff.models import Query, Staff, UserProfile
 
 
 class AdminDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -26,8 +28,8 @@ class AdminDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     raise_exception = True
 
     def get_queryset(self):
-        return Staff.objects.filter(organization=self.request.user.organization)
-    
+        queryset = Staff.objects.filter(organization=self.request.user.organization)
+        return queryset.order_by('last_name')
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
@@ -72,6 +74,21 @@ class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             kwargs={"org_slug": self.object.slug}
         )
 
+class StaffStatusUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Staff
+    template_name = "organization/staff_status_update_form.html"
+    fields = ['staff_status']
+
+    def has_permission(self):
+        org_slug = self.kwargs['org_slug']
+        return self.request.user.organization.slug == org_slug
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization:admin_dashboard",
+            kwargs={"org_slug": self.request.user.organization.slug}
+        )
+    
 
 def generate_password(n=8):
     """Generate a random password of length n"""
@@ -313,6 +330,7 @@ class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             kwargs={"org_slug": self.request.user.organization.slug}
         )
 
+
 class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Query
     template_name = 'organization/query_list.html'
@@ -324,6 +342,7 @@ class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
         return self.request.user.organization.slug == org_slug
+    
     
 class QueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Query
@@ -404,6 +423,7 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
                         messages.error(request, f"Error on row {reader.line_num}: Staff with username '{row['username']}' already exists.")
                         return HttpResponseRedirect(reverse("organization:staff_create_csv", kwargs={'org_slug': slug }))
         except csv.Error as e:
+            
             messages.error(request, f'Error processing CSV file: {e}')
             return HttpResponseRedirect(reverse("organization:staff_create_csv", kwargs={'org_slug': slug }))
             
