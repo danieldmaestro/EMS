@@ -19,8 +19,8 @@ class SignUp(CreateView):
             username=form.cleaned_data['admin_username'],
             email=form.cleaned_data["admin_email"],
             password=form.cleaned_data['password1'],
-            first_name=form.changed_data["admin_fname"],
-            last_name=form.changed_data["admin_lname"],
+            first_name=form.cleaned_data["admin_fname"],
+            last_name=form.cleaned_data["admin_lname"],
         )
         organization.admin = admin
         organization.save()
