@@ -8,7 +8,7 @@
       <div class="col-md-12 grid-margin">
         <div class="row">
           <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-            <h3 class="font-weight-bold">Welcome, {{ user.staff.first_name }}</h3>
+            <h3 class="font-weight-bold">Welcome to the Staff Dashboard, {{ user.staff.first_name }}</h3>
           </div>
         </div>
       </div>
@@ -71,8 +71,6 @@
                         badge-info
                         {% endif %}">
                         {{ staff.staff_status }}</div></td>
-                      <td><a class="badge badge-primary" href="{{ staff.get_absolute_url }}">View</a></td>
-
                     </tr>
                   {% endfor %}
                 </tbody>

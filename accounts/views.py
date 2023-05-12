@@ -2,6 +2,8 @@ from django.contrib.auth import login, logout
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .models import User
+from django.contrib.auth import views as auth_views
+
 
 from organization.forms import OrganizationSignUpForm
 
@@ -22,3 +24,7 @@ class SignUp(CreateView):
         organization.admin = admin
         organization.save()
         return super().form_valid(form)
+    
+    
+class CustomPasswordReset(auth_views.PasswordResetView):
+    success_url = reverse_lazy("accounts:password_reset_done")

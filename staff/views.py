@@ -60,7 +60,6 @@ class StaffQueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = self.request.user.staff.queries.all()
-        print(queryset)
         return queryset
         
     def has_permission(self):
