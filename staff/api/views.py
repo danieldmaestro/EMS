@@ -25,12 +25,12 @@ class StaffUserProfileDetailAPIView(generics.RetrieveAPIView):
     
 
 class StaffPictureUploadAPIView(generics.UpdateAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = StaffSerializer
     permission_classes = [IsAuthenticated, IsPartOfOrg]
     parser_class = (FileUploadParser,)
 
     def get_object(self):
-        return self.request.user.staff.userprofile
+        return self.request.user.staff
 
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -38,7 +38,8 @@ class StaffPictureUploadAPIView(generics.UpdateAPIView):
             return Response({'error': 'No file uploaded.'}, status=status.HTTP_400_BAD_REQUEST)
         
         file = request.data['profile_picture']
-        instance.profile_picture.save(file.name, file, save=True)
+        UserProfile.objects.get_or_create(staff_profile=instance) 
+        instance.userprofile.profile_picture.save(file.name, file, save=True)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
     

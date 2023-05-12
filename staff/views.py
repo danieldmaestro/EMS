@@ -37,8 +37,10 @@ class UploadProfilePictureView(LoginRequiredMixin, PermissionRequiredMixin, Form
     def form_valid(self, form):
         profile_picture = form.cleaned_data['profile_picture']
         # profile_picture = self.request.FILES.get('profile_picture')
-        self.request.user.staff.userprofile.profile_picture = profile_picture
-        self.request.user.staff.userprofile.save()
+        staff = self.request.user.staff
+        UserProfile.objects.get_or_create(staff_profile=staff) 
+        staff.userprofile.profile_picture = profile_picture
+        staff.userprofile.save()
         return super().form_valid(form)
     
     def get_success_url(self):

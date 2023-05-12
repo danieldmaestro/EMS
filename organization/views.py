@@ -134,8 +134,7 @@ class StaffCreateFormView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
                                         last_name=staff.last_name,
                                         )
         staff.user = user
-        staff_instance = staff.save()
-        UserProfile.objects.create(staff_profile=staff_instance)
+        staff.save()
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
         message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
@@ -422,9 +421,7 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
                                                         last_name=staff.last_name,
                                                         )
                         staff.user = user
-                        staff_instance = staff.save()
-                        UserProfile.objects.create(
-                            staff_profile=staff_instance)
+                        staff.save()
                     except IntegrityError:
                         transaction.rollback()
                         messages.error(
