@@ -4,7 +4,6 @@ from django.views.generic import CreateView
 from .models import User
 from django.contrib.auth import views as auth_views
 
-
 from organization.forms import OrganizationSignUpForm
 
 # Create your views here.
@@ -20,6 +19,8 @@ class SignUp(CreateView):
             username=form.cleaned_data['admin_username'],
             email=form.cleaned_data["admin_email"],
             password=form.cleaned_data['password1'],
+            first_name=form.changed_data["admin_fname"],
+            last_name=form.changed_data["admin_lname"],
         )
         organization.admin = admin
         organization.save()
