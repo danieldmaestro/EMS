@@ -139,7 +139,7 @@ class StaffCreateFormView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
         message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
-        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+        # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         messages.success(self.request, "Staff created successfully.")
         return super().form_valid(form)
 
@@ -439,7 +439,7 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
         subject = f"{current_org.name}: LOGIN CREDENTIALS"
         message = f"Dear {staff.first_name},\n\nWelcome to {current_org.name}.\n\nLogin to your dashboard using these credentials.\n\nUsername: {staff.username}\nPassword: {password}"
         recipient_list = [staff.personal_email,]
-        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+        # send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
         return HttpResponseRedirect(reverse("organization:admin_dashboard",  kwargs={'org_slug': slug}))
 
     def has_permission(self):
