@@ -32,7 +32,7 @@ class OrgCustomHyperlinkedIdentityField(serializers.HyperlinkedRelatedField):
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'org_slug': request.user.staff.organization.slug,
+            'org_slug': request.user.organization.slug,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
