@@ -1,10 +1,11 @@
+from typing import Any, Dict
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, FormView, ListView, TemplateView, UpdateView
+from django.views.generic import FormView, ListView, TemplateView, UpdateView
 
 from .forms import ProfilePictureForm, QueryResponseForm
 from .models import Query, Staff, UserProfile
+from accounts.models import User
 
 # Create your views here.
 class StaffDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -16,9 +17,19 @@ class StaffDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_queryset(self):
         return Staff.objects.filter(organization=self.request.user.staff.organization)
     
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context_data = super().get_context_data(**kwargs)
+        active_query_count = self.request.user.staff.queries.filter(is_responded=False).count()
+        context_data["active_query_count"] = active_query_count
+        return context_data
+    
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        try:
+            self.request.user.staff
+            return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        except User.staff.RelatedObjectDoesNotExist:
+            return False
     
 
 class StaffProfileView(LoginRequiredMixin,PermissionRequiredMixin, TemplateView):
@@ -27,7 +38,11 @@ class StaffProfileView(LoginRequiredMixin,PermissionRequiredMixin, TemplateView)
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        try:
+            self.request.user.staff
+            return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        except User.staff.RelatedObjectDoesNotExist:
+            return False
     
 
 class UploadProfilePictureView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -51,14 +66,17 @@ class UploadProfilePictureView(LoginRequiredMixin, PermissionRequiredMixin, Form
     
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        try:
+            self.request.user.staff
+            return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        except User.staff.RelatedObjectDoesNotExist:
+            return False
     
 
 class StaffQueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Query
     template_name = "staff/query_list.html"
     context_object_name = 'query_list'
-    raise_exception = True
 
     def get_queryset(self):
         queryset = self.request.user.staff.queries.all()
@@ -66,7 +84,11 @@ class StaffQueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        try:
+            self.request.user.staff
+            return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        except User.staff.RelatedObjectDoesNotExist:
+            return False
     
 
 class StaffQueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -88,4 +110,8 @@ class StaffQueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, Update
         
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        try:
+            self.request.user.staff
+            return self.request.user.staff.organization.slug == org_slug and not self.request.user.is_staff
+        except User.staff.RelatedObjectDoesNotExist:
+            return False

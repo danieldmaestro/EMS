@@ -6,11 +6,11 @@ from organization.models import Department, JobTitle, NigerianPhoneNumberField, 
 
 # Create your models here.
 class Query(models.Model):
-    staff = models.ForeignKey('Staff', on_delete=models.CASCADE, related_name="queries")
-    query_requester = models.ForeignKey('Staff', on_delete=models.CASCADE)
+    staff = models.ForeignKey('Staff', on_delete=models.SET_NULL, related_name="queries", null=True)
+    query_requester = models.ForeignKey('Staff', on_delete=models.SET_NULL, null=True)
     reason = models.TextField()
     response = models.TextField(blank=True, null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="queries", blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, related_name="queries", blank=True, null=True)
     is_responded = models.BooleanField(default=False)
     
 
@@ -40,7 +40,7 @@ class Staff(models.Model):
         ("Female", "Female"),
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff", blank=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name="staff", null=True, blank=True)
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     personal_email = models.EmailField()
@@ -54,9 +54,9 @@ class Staff(models.Model):
     next_of_kin_name = models.CharField(max_length=50)
     next_of_kin_email = models.EmailField()
     next_of_kin_phone_number = NigerianPhoneNumberField()
-    dept = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="staffs",  blank=True)
-    job_title = models.ForeignKey(JobTitle, on_delete=models.CASCADE, related_name="staffs", blank=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="staffs", blank=True)
+    dept = models.ForeignKey(Department, on_delete=models.SET_NULL, related_name="staffs",  blank=True, null=True)
+    job_title = models.ForeignKey(JobTitle, on_delete=models.SET_NULL, related_name="staffs", blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, related_name="staffs", blank=True, null=True)
     date_employed = models.DateField(auto_now_add=True)
 
     def get_absolute_url(self):
@@ -71,7 +71,7 @@ class Staff(models.Model):
     
 
 class UserProfile(models.Model):
-    staff_profile = models.OneToOneField(Staff, on_delete=models.CASCADE, related_name="userprofile",null=True, blank=True)
+    staff_profile = models.OneToOneField(Staff, on_delete=models.SET_NULL, related_name="userprofile", null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
     def __str__(self):

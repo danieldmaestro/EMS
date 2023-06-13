@@ -34,8 +34,12 @@ class AdminDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
-
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
+        
 
 class OrgDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Organization
@@ -52,7 +56,11 @@ class OrgDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -70,7 +78,11 @@ class OrgUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -86,7 +98,11 @@ class StaffStatusUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateV
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -107,7 +123,11 @@ class StaffCreateChoiceView(LoginRequiredMixin, PermissionRequiredMixin, Templat
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class StaffCreateFormView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -144,7 +164,11 @@ class StaffCreateFormView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -167,7 +191,11 @@ class StaffDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class StaffUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -186,7 +214,11 @@ class StaffUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class DepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -200,7 +232,11 @@ class DepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -216,7 +252,11 @@ class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -237,7 +277,11 @@ class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -257,7 +301,11 @@ class JobTitleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class JobTitleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -278,7 +326,11 @@ class JobTitleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -299,7 +351,11 @@ class JobtTitleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -326,7 +382,11 @@ class QueryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
     def get_success_url(self):
         return reverse_lazy(
@@ -345,7 +405,11 @@ class QueryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class QueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -362,7 +426,11 @@ class QueryResponseView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False
 
 
 class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
@@ -441,4 +509,8 @@ class CreateStaffFromCSV(LoginRequiredMixin, PermissionRequiredMixin, View):
 
     def has_permission(self):
         org_slug = self.kwargs['org_slug']
-        return self.request.user.organization.slug == org_slug
+        try:
+            self.request.user.organization
+            return self.request.user.organization.slug == org_slug
+        except User.organization.RelatedObjectDoesNotExist:
+            return False

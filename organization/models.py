@@ -37,7 +37,7 @@ class Organization(models.Model):
     admin_username = models.CharField(max_length=25, unique=True)
     admin_phone_number = NigerianPhoneNumberField()
     company_email_domain = models.CharField(max_length=30, null=True)
-    admin = models.OneToOneField(User, on_delete=models.CASCADE, related_name='organization', blank=True, null=True)
+    admin = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='organization', blank=True, null=True)
     slug = models.SlugField(unique=True)
 
     def get_absolute_url(self):
@@ -51,7 +51,7 @@ class Department(models.Model):
     name = models.CharField(max_length=40, unique=True)
     description = models.TextField(max_length=255)
     slug = models.SlugField(blank=True, null=True)
-    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="departments", blank=True, null=True)
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, related_name="departments", blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("organization:dept_detail", kwargs={"pk": self.pk})
@@ -63,8 +63,8 @@ class Department(models.Model):
 class JobTitle(models.Model):
     role = models.CharField(max_length=25, unique=True)
     description = models.TextField(max_length=255, null=True, blank=True)
-    department = models.ForeignKey('Department', on_delete=models.CASCADE, related_name="job_titles", blank=True, null=True)
-    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name="job_titles", blank=True, null=True)
+    department = models.ForeignKey('Department', on_delete=models.SET_NULL, related_name="job_titles", blank=True, null=True)
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, related_name="job_titles", blank=True, null=True)
 
 
     def get_absolute_url(self):
