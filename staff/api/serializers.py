@@ -8,7 +8,7 @@ class CustomHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
     """Custom HyperlinkedRelatedField for URLs with two lookup kwargs(org_slug and pk)"""
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'org_slug': request.user.staff.organization.slug,
+            'org_slug': request.user.organization.slug,
             'pk': obj.pk
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
