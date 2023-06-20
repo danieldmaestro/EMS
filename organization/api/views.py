@@ -57,6 +57,7 @@ class JobTitleListCreateAPIView(generics.ListCreateAPIView):
         dept_name = serializer.validated_data.pop('dept_name')
         department = get_object_or_404(Department, name__iexact=dept_name)
         job_title = serializer.save(organization=self.request.user.organization, department=department)
+        job_title.save()
         return job_title
     
     def get_queryset(self):

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'staff',
     'rest_framework',
     'accounts',
-    'django_bootstrap5',
+    'drf_spectacular',
     'rest_framework_simplejwt',
     # 'phonenumber_field'
 ]
@@ -97,6 +97,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': "Django DRF EMS"
 }
 
 
