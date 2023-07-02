@@ -24,6 +24,7 @@ Django==4.2.1
 django-bootstrap3==23.1
 django-celery-beat==2.5.0
 django-celery-results==2.5.0
+django-cors-headers==4.1.0
 django-embed-video==1.4.8
 django-filter==23.1
 django-pdfkit==0.3.1
